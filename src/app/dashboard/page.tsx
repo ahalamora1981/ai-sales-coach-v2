@@ -79,50 +79,29 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* Knowledge Base & Usage Stats */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Usage Stats */}
-        <div className="bg-white rounded-xl border border-hairline p-6">
-          <h3 className="text-xl font-semibold text-ink mb-2">
-            {t.dashboard.usageStats}
-          </h3>
-          <p className="text-base text-muted mb-4">
-            {t.dashboard.recentActivity}
-          </p>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-surface-soft rounded-lg p-4 text-center">
-              <p className="text-3xl font-bold text-primary">
-                {stats.scanCount}
-              </p>
-              <p className="text-base text-muted mt-1">
-                {t.dashboard.menuScans}
-              </p>
-            </div>
-            <div className="bg-surface-soft rounded-lg p-4 text-center">
-              <p className="text-3xl font-bold text-primary">
-                {stats.chatCount}
-              </p>
-              <p className="text-base text-muted mt-1">
-                {t.dashboard.chatSessions}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Knowledge Base Overview */}
-        <div className="bg-white rounded-xl border border-hairline p-6">
-          <h3 className="text-xl font-semibold text-ink mb-2">
-            {t.dashboard.knowledgeBase}
-          </h3>
-          <p className="text-base text-muted mb-4">
-            {t.dashboard.knowledgeBaseDesc}
-          </p>
-          <div className="space-y-2">
-            <p className="text-lg font-medium text-ink">
-              {sauceKnowledgeBase.length} {t.dashboard.sauces}
+      {/* Usage Stats */}
+      <div className="bg-white rounded-xl border border-hairline p-6">
+        <h3 className="text-xl font-semibold text-ink mb-2">
+          {t.dashboard.usageStats}
+        </h3>
+        <p className="text-base text-muted mb-4">
+          {t.dashboard.recentActivity}
+        </p>
+        <div className="grid grid-cols-2 gap-4 max-w-md">
+          <div className="bg-surface-soft rounded-lg p-4 text-center">
+            <p className="text-3xl font-bold text-primary">
+              {stats.scanCount}
             </p>
-            <p className="text-base text-muted">
-              {Object.keys(saucesByCategory).length} {t.dashboard.categories}
+            <p className="text-base text-muted mt-1">
+              {t.dashboard.menuScans}
+            </p>
+          </div>
+          <div className="bg-surface-soft rounded-lg p-4 text-center">
+            <p className="text-3xl font-bold text-primary">
+              {stats.chatCount}
+            </p>
+            <p className="text-base text-muted mt-1">
+              {t.dashboard.chatSessions}
             </p>
           </div>
         </div>
@@ -131,7 +110,7 @@ export default function DashboardPage() {
       {/* Detailed Knowledge Base */}
       <div className="bg-white rounded-xl border border-hairline p-6">
         <h3 className="text-xl font-semibold text-ink mb-4">
-          {locale === "zh" ? "详细知识库" : "Detailed Knowledge Base"}
+          {locale === "zh" ? "菜品酱料知识库" : "Sauce & Cuisine Knowledge Base"}
         </h3>
         
         <div className="space-y-4">
