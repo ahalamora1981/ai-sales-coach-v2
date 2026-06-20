@@ -27,10 +27,14 @@ services:
       - DATABASE_URL=postgresql://postgres:password@db:5432/ai_sales_coach
       - QWEN_API_KEY=${QWEN_API_KEY}
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - QWEN_MODEL=${QWEN_MODEL}
+      - QWEN_BASE_URL=${QWEN_BASE_URL}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL}
+      - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL}
       - AUTH_SECRET=${AUTH_SECRET}
       - AUTH_TRUST_HOST=true
-      - NEXTAUTH_URL=http://localhost:3000
-      - NEXTAUTH_SECRET=${AUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
     depends_on:
       db:
         condition: service_healthy
