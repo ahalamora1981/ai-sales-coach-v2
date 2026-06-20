@@ -106,11 +106,9 @@ export function MemoryDisplay() {
   const scenarioMemories = memories.filter((m) => m.memoryType === "scenario")
 
   // Get unique sauces from knowledge memories
-  const knownSauces = [
-    ...new Set(
-      knowledgeMemories.map((m) => m.metadata?.sauceNameZh as string || m.metadata?.sauceName as string)
-    ),
-  ].filter(Boolean)
+  const knownSauces = Array.from(new Set(
+    knowledgeMemories.map((m) => m.metadata?.sauceNameZh as string || m.metadata?.sauceName as string)
+  )).filter(Boolean)
 
   // Get preferences
   const cuisinePrefs = preferenceMemories
