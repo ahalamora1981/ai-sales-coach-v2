@@ -31,6 +31,7 @@ export async function POST(request: Request) {
 
     // Analyze menu with Vision AI
     const aiResponse = await provider.analyzeImage(image, localizedPrompt)
+    console.log("AI Response preview:", aiResponse.substring(0, 500))
 
     // Parse AI response
     let dishes: Array<{

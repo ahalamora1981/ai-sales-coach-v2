@@ -145,7 +145,7 @@ export default function ScannerPage() {
         const data = await response.json()
         setResults(data.dishes || [])
       } else if (textContent) {
-        // Text menu scan - send as message to chat API
+        // Text menu scan - send as message to chat API (streaming)
         const response = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -160,7 +160,19 @@ export default function ScannerPage() {
           throw new Error(t.scanner.failedToScan)
         }
 
-        const data = await response.json()
+        // Read streaming response
+        const reader = response.body?.getReader()
+        const decoder = new TextDecoder()
+        let fullContent = ""
+
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            fullContent += decoder.decode(value, { stream: true })
+          }
+        }
+
         // For text menus, we show the AI response as a single result
         setResults([
           {
@@ -169,7 +181,7 @@ export default function ScannerPage() {
             recommendations: [
               {
                 sauce: "AI Analysis",
-                reason: data.content,
+                reason: fullContent,
                 confidence: "high",
               },
             ],
