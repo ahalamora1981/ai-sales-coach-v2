@@ -40,16 +40,19 @@ export interface Translations {
     aiSalesCoachDesc: string
     startChatting: string
     quickStart: string
-    saucesCount: string
-    inKnowledgeBase: string
-    cuisinesCount: string
-    cuisinesList: string
-    adaptiveAi: string
-    adaptiveAiDesc: string
-    multiModel: string
-    multiModelDesc: string
     recentActivity: string
     noActivity: string
+    // Knowledge Base
+    knowledgeBase: string
+    knowledgeBaseDesc: string
+    viewAllSauces: string
+    categories: string
+    sauces: string
+    // Usage Stats
+    usageStats: string
+    menuScans: string
+    chatSessions: string
+    noData: string
   }
   scanner: {
     title: string

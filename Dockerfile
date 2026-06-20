@@ -1,7 +1,9 @@
-FROM node:18-alpine AS base
+FROM node:18-slim AS base
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install pnpm and openssl
+RUN npm install -g pnpm@9 && \
+    apt-get update && apt-get install -y openssl && \
+    rm -rf /var/lib/apt/lists/*
 
 # Dependencies stage
 FROM base AS deps
