@@ -547,3 +547,214 @@ export async function getRestaurantMemories(userId: string) {
     orderBy: { updatedAt: "desc" },
   })
 }
+
+// ============================================================
+// Sales Scenario Memory
+// ============================================================
+
+/**
+ * Scenario types
+ */
+export type ScenarioType = 
+  | "objection_price"     // Price objection handling
+  | "objection_quality"   // Quality objection handling
+  | "objection_competition" // Competitor comparison
+  | "pitch"               // Sales pitch practice
+  | "closing"             // Closing techniques
+  | "product_knowledge"   // Product knowledge quiz
+  | "general"             // General sales conversation
+
+/**
+ * Detect scenario type from conversation
+ */
+export function detectScenarioType(text: string): ScenarioType {
+  const textLower = text.toLowerCase()
+  
+  // Price objections
+  if (textLower.match(/price|价格|多少钱|贵|便宜|成本|利润|margin/)) {
+    return "objection_price"
+  }
+  
+  // Quality objections
+  if (textLower.match(/quality|质量|味道|口感|不好吃|差/)) {
+    return "objection_quality"
+  }
+  
+  // Competition
+  if (textLower.match(/competitor|竞品|对比|区别|其他品牌|李锦记|海天/)) {
+    return "objection_competition"
+  }
+  
+  // Pitch
+  if (textLower.match(/pitch|推销|介绍|卖|怎么卖|话术/)) {
+    return "pitch"
+  }
+  
+  // Closing
+  if (textLower.match(/close|成交|签单|下单|合作|签/)) {
+    return "closing"
+  }
+  
+  // Product knowledge
+  if (textLower.match(/what is|是什么|怎么用|用法|做法|成分|原料/)) {
+    return "product_knowledge"
+  }
+  
+  return "general"
+}
+
+/**
+ * Detect struggle from thumbs down or negative feedback
+ */
+export function detectStruggle(
+  userMessage: string,
+  aiResponse: string,
+  feedback: string
+): {
+  isStruggle: boolean
+  strugglePoints: string[]
+} {
+  if (feedback !== "thumbs_down") {
+    return { isStruggle: false, strugglePoints: [] }
+  }
+  
+  const strugglePoints: string[] = []
+  const combinedText = userMessage + " " + aiResponse
+  
+  // Detect what they struggled with
+  if (combinedText.match(/price|价格/)) strugglePoints.push("price_handling")
+  if (combinedText.match(/quality|质量/)) strugglePoints.push("quality_objection")
+  if (combinedText.match(/competitor|竞品/)) strugglePoints.push("competitor_comparison")
+  if (combinedText.match(/closing|成交/)) strugglePoints.push("closing_technique")
+  
+  return {
+    isStruggle: true,
+    strugglePoints: strugglePoints.length > 0 ? strugglePoints : ["general"],
+  }
+}
+
+/**
+ * Store sales scenario memory
+ */
+export async function storeScenarioMemory(
+  userId: string,
+  conversationId: string,
+  scenario: {
+    scenarioType: ScenarioType
+    sauce?: string
+    outcome: "success" | "struggle" | "practice"
+    strugglePoints?: string[]
+    userMessage: string
+    aiResponse: string
+  }
+): Promise<void> {
+  const content = `${scenario.outcome === "struggle" ? "Struggled with" : "Practiced"} ${scenario.scenarioType}${scenario.sauce ? ` for ${scenario.sauce}` : ""}`
+  
+  // Check if we already have a similar scenario memory
+  const existing = await prisma.userMemory.findFirst({
+    where: {
+      userId,
+      memoryType: "scenario",
+      content,
+    },
+  })
+
+  if (existing) {
+    // Update practice count
+    const existingMeta = existing.metadata as Record<string, unknown>
+    await prisma.userMemory.update({
+      where: { id: existing.id },
+      data: {
+        metadata: {
+          ...existingMeta,
+          practiceCount: ((existingMeta?.practiceCount as number) || 1) + 1,
+          lastPracticed: new Date().toISOString(),
+          outcome: scenario.outcome,
+        },
+        updatedAt: new Date(),
+      },
+    })
+  } else {
+    // Create new scenario memory
+    await prisma.userMemory.create({
+      data: {
+        userId,
+        memoryType: "scenario",
+        content,
+        metadata: {
+          conversationId,
+          scenarioType: scenario.scenarioType,
+          sauce: scenario.sauce,
+          outcome: scenario.outcome,
+          strugglePoints: scenario.strugglePoints || [],
+          userMessage: scenario.userMessage.slice(0, 200),
+          aiResponse: scenario.aiResponse.slice(0, 200),
+          practiceCount: 1,
+          firstPracticed: new Date().toISOString(),
+          lastPracticed: new Date().toISOString(),
+        },
+      },
+    })
+  }
+}
+
+/**
+ * Get scenario context for AI prompt
+ */
+export async function getScenarioContext(userId: string): Promise<string> {
+  const scenarios = await prisma.userMemory.findMany({
+    where: {
+      userId,
+      memoryType: "scenario",
+    },
+    orderBy: { updatedAt: "desc" },
+    take: 20,
+  })
+
+  if (scenarios.length === 0) {
+    return ""
+  }
+
+  // Separate struggles and successes
+  const struggles = scenarios.filter(
+    (s) => (s.metadata as Record<string, unknown>)?.outcome === "struggle"
+  )
+  const successes = scenarios.filter(
+    (s) => (s.metadata as Record<string, unknown>)?.outcome === "success"
+  )
+  
+  let prompt = "\n\n## Sales Practice History"
+  
+  if (struggles.length > 0) {
+    prompt += "\n\n### Areas Needing Improvement"
+    struggles.slice(0, 5).forEach((s) => {
+      const meta = s.metadata as Record<string, unknown>
+      prompt += `\n- ${meta.scenarioType}: ${s.content} (practiced ${meta.practiceCount} times)`
+    })
+    prompt += "\nInstructions: Focus practice on these weak areas. Provide extra tips and encouragement."
+  }
+  
+  if (successes.length > 0) {
+    prompt += "\n\n### Strengths"
+    successes.slice(0, 3).forEach((s) => {
+      const meta = s.metadata as Record<string, unknown>
+      prompt += `\n- ${meta.scenarioType}: ${s.content} (practiced ${meta.practiceCount} times)`
+    })
+    prompt += "\nInstructions: Acknowledge their strengths. Suggest more advanced challenges."
+  }
+
+  return prompt
+}
+
+/**
+ * Get scenario memories for a user (for UI display)
+ */
+export async function getScenarioMemories(userId: string) {
+  return prisma.userMemory.findMany({
+    where: {
+      userId,
+      memoryType: "scenario",
+    },
+    orderBy: { updatedAt: "desc" },
+  })
+}

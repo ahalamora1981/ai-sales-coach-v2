@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { auth } from "@/lib/auth"
+import {
+  detectScenarioType,
+  detectStruggle,
+  storeScenarioMemory,
+} from "@/lib/ai/memory"
 
 export async function POST(request: Request) {
   try {
@@ -24,13 +29,53 @@ export async function POST(request: Request) {
       data: { feedback },
     })
 
-    // Store feedback as memory for adaptive learning
+    // Get the message and its conversation context
     const message = await prisma.message.findUnique({
       where: { id: messageId },
+      include: {
+        conversation: {
+          include: {
+            messages: {
+              orderBy: { createdAt: "asc" },
+              take: 10,
+            },
+          },
+        },
+      },
     })
 
     if (message) {
-      // Create a memory based on the feedback
+      // Find the user message that preceded this AI response
+      const messageIndex = message.conversation.messages.findIndex(
+        (m) => m.id === messageId
+      )
+      const userMessage =
+        messageIndex > 0
+          ? message.conversation.messages[messageIndex - 1]
+          : null
+
+      // Detect scenario type from the conversation
+      const scenarioType = detectScenarioType(
+        (userMessage?.content || "") + " " + message.content
+      )
+
+      // Detect struggle if thumbs down
+      const { isStruggle, strugglePoints } = detectStruggle(
+        userMessage?.content || "",
+        message.content,
+        feedback
+      )
+
+      // Store as scenario memory
+      await storeScenarioMemory(session.user.id, conversationId, {
+        scenarioType,
+        outcome: isStruggle ? "struggle" : "success",
+        strugglePoints,
+        userMessage: userMessage?.content || "",
+        aiResponse: message.content,
+      })
+
+      // Also store as general memory for backward compatibility
       const memoryType = feedback === "thumbs_up" ? "preference" : "mistake"
       const memoryContent =
         feedback === "thumbs_up"
@@ -46,6 +91,7 @@ export async function POST(request: Request) {
             messageId,
             conversationId,
             feedback,
+            scenarioType,
           },
         },
       })
