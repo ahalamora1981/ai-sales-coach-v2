@@ -21,7 +21,7 @@
 - [x] 3.2 Create login page with demo account selection
 - [x] 3.3 Implement session management and JWT tokens
 - [x] 3.4 Create auth middleware to protect routes
-- [ ] 3.5 Add user profile display and session indicator
+- [x] 3.5 Add user profile display and session indicator
 
 ## 4. Core Layout & Navigation
 
