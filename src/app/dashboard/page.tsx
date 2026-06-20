@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/lib/i18n/context"
 import { Collapsible } from "@/components/ui/collapsible"
+import { MemoryDisplay } from "@/components/memory-display"
 import { sauceKnowledgeBase, cuisineKnowledgeBase, categoryNames } from "@/lib/knowledge-data"
 import { useEffect, useState } from "react"
 
@@ -103,6 +104,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Memory Display */}
+      <MemoryDisplay />
 
       {/* Detailed Knowledge Base */}
       <div className="bg-white rounded-xl border border-hairline p-6">
