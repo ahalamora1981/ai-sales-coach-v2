@@ -81,12 +81,9 @@ export default function DashboardPage() {
 
       {/* Usage Stats */}
       <div className="bg-white rounded-xl border border-hairline p-6">
-        <h3 className="text-xl font-semibold text-ink mb-2">
+        <h3 className="text-xl font-semibold text-ink mb-4">
           {t.dashboard.usageStats}
         </h3>
-        <p className="text-base text-muted mb-4">
-          {t.dashboard.recentActivity}
-        </p>
         <div className="grid grid-cols-2 gap-4 max-w-md">
           <div className="bg-surface-soft rounded-lg p-4 text-center">
             <p className="text-3xl font-bold text-primary">

@@ -15,7 +15,7 @@ export async function GET() {
 
     const [scanCount, chatCount] = await Promise.all([
       prisma.conversation.count({
-        where: { userId, type: "scanner" }
+        where: { userId, type: "scan" }
       }),
       prisma.conversation.count({
         where: { userId, type: "chat" }

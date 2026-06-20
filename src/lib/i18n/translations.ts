@@ -278,8 +278,8 @@ const zh: Translations = {
     categories: "个分类",
     sauces: "款酱料",
     // 使用统计
-    usageStats: "使用统计",
-    menuScans: "菜单扫描",
+    usageStats: "统计数据",
+    menuScans: "菜单精灵",
     chatSessions: "陪练对话",
     noData: "暂无数据"
   },
