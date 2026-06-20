@@ -7,7 +7,7 @@ import {
 import { findSaucesForDish } from "@/lib/ai/sauce-kb"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import { storeProductKnowledge } from "@/lib/ai/memory"
+import { storeProductKnowledge, storeRestaurantMemory } from "@/lib/ai/memory"
 
 export async function POST(request: Request) {
   try {
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
       })
     }
 
-    // Store product knowledge memories from this scan
+    // Store memories from this scan
     try {
       // Extract all sauce names from recommendations
       const allSauceNames = dishes
@@ -112,7 +112,20 @@ export async function POST(request: Request) {
       const fakeAiResponse = `Recommended sauces: ${allSauceNames}`
       const fakeUserMessage = dishes.map((d) => d.originalName).join(", ")
       
-      await storeProductKnowledge(session.user.id, fakeUserMessage, fakeAiResponse)
+      // Store product knowledge and restaurant memory
+      await Promise.all([
+        storeProductKnowledge(session.user.id, fakeUserMessage, fakeAiResponse),
+        storeRestaurantMemory(session.user.id, {
+          dishes: dishes.map(d => ({
+            originalName: d.originalName,
+            englishName: d.englishName,
+            recommendations: d.recommendations.map(r => ({
+              sauce: r.sauce,
+              reason: r.reason,
+            })),
+          })),
+        }),
+      ])
     } catch (memoryError) {
       // Memory storage errors shouldn't break the scanner
       console.error("Memory storage error:", memoryError)

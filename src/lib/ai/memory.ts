@@ -388,3 +388,162 @@ export async function getPreferenceContext(userId: string): Promise<string> {
 
   return prompt
 }
+
+// ============================================================
+// Restaurant Memory
+// ============================================================
+
+/**
+ * Store restaurant memory from menu scan
+ */
+export async function storeRestaurantMemory(
+  userId: string,
+  scanResult: {
+    restaurantName?: string
+    dishes: Array<{
+      originalName: string
+      englishName?: string
+      recommendations: Array<{ sauce: string; reason: string }>
+    }>
+  }
+): Promise<void> {
+  // Try to extract restaurant name from dishes or use a default
+  const restaurantName = scanResult.restaurantName || "Unknown Restaurant"
+  
+  // Extract all sauce names from recommendations
+  const saucesPitched = [
+    ...new Set(
+      scanResult.dishes.flatMap((d) => d.recommendations.map((r) => r.sauce))
+    ),
+  ]
+  
+  // Extract all dish names
+  const dishesScanned = scanResult.dishes.map((d) => d.originalName)
+  
+  // Detect cuisine type from dishes
+  const combinedDishText = dishesScanned.join(" ")
+  const cuisines = extractCuisinesFromText(combinedDishText)
+  const cuisineType = cuisines.length > 0 ? cuisines[0] : "general"
+
+  const content = `Scanned ${restaurantName}`
+  
+  // Check if we already have a memory for this restaurant
+  const existing = await prisma.userMemory.findFirst({
+    where: {
+      userId,
+      memoryType: "restaurant",
+      content,
+    },
+  })
+
+  if (existing) {
+    // Update existing restaurant memory
+    const existingMeta = existing.metadata as Record<string, unknown>
+    const existingDishes = (existingMeta?.dishesScanned as string[]) || []
+    const existingSauces = (existingMeta?.saucesPitched as string[]) || []
+    
+    await prisma.userMemory.update({
+      where: { id: existing.id },
+      data: {
+        metadata: {
+          ...existingMeta,
+          dishesScanned: [...new Set([...existingDishes, ...dishesScanned])],
+          saucesPitched: [...new Set([...existingSauces, ...saucesPitched])],
+          scanCount: ((existingMeta?.scanCount as number) || 1) + 1,
+          lastScan: new Date().toISOString(),
+        },
+        updatedAt: new Date(),
+      },
+    })
+  } else {
+    // Create new restaurant memory
+    await prisma.userMemory.create({
+      data: {
+        userId,
+        memoryType: "restaurant",
+        content,
+        metadata: {
+          restaurantName,
+          cuisineType,
+          dishesScanned,
+          saucesPitched,
+          scanCount: 1,
+          firstScan: new Date().toISOString(),
+          lastScan: new Date().toISOString(),
+          outcome: "pending",
+        },
+      },
+    })
+  }
+}
+
+/**
+ * Get restaurant context for AI prompt
+ */
+export async function getRestaurantContext(
+  userId: string,
+  currentDishes?: string[]
+): Promise<string> {
+  const restaurants = await prisma.userMemory.findMany({
+    where: {
+      userId,
+      memoryType: "restaurant",
+    },
+    orderBy: { updatedAt: "desc" },
+    take: 10,
+  })
+
+  if (restaurants.length === 0) {
+    return ""
+  }
+
+  let prompt = "\n\n## Restaurant Visit History"
+  
+  // Check if current dishes match any previous restaurant
+  if (currentDishes && currentDishes.length > 0) {
+    const currentText = currentDishes.join(" ").toLowerCase()
+    
+    for (const restaurant of restaurants) {
+      const meta = restaurant.metadata as Record<string, unknown>
+      const dishesScanned = (meta?.dishesScanned as string[]) || []
+      
+      // Check for overlapping dishes
+      const overlap = dishesScanned.filter((d) =>
+        currentText.includes(d.toLowerCase())
+      )
+      
+      if (overlap.length > 0) {
+        prompt += "\n\n### Previous Visit Detected"
+        prompt += `\nRestaurant: ${meta.restaurantName}`
+        prompt += `\nPreviously scanned dishes: ${dishesScanned.join(", ")}`
+        prompt += `\nSauces previously recommended: ${(meta?.saucesPitched as string[])?.join(", ")}`
+        prompt += `\nVisit count: ${meta.scanCount}`
+        prompt += "\nInstructions: Reference this previous visit. Ask about follow-up or new recommendations."
+        break
+      }
+    }
+  }
+  
+  // Show recent restaurants
+  prompt += "\n\nRecent restaurants visited:"
+  restaurants.slice(0, 5).forEach((r) => {
+    const meta = r.metadata as Record<string, unknown>
+    const scanCount = (meta?.scanCount as number) || 1
+    prompt += `\n- ${meta.restaurantName} (${meta.cuisineType}) - ${scanCount} visit(s)`
+  })
+
+  return prompt
+}
+
+/**
+ * Get all restaurant memories for a user (for UI display)
+ */
+export async function getRestaurantMemories(userId: string) {
+  return prisma.userMemory.findMany({
+    where: {
+      userId,
+      memoryType: "restaurant",
+    },
+    orderBy: { updatedAt: "desc" },
+  })
+}

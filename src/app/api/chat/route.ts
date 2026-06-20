@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db"
 import { auth } from "@/lib/auth"
 import {
   getKnowledgeContext,
+  getRestaurantContext,
   storeProductKnowledge,
   storePreferences,
 } from "@/lib/ai/memory"
@@ -34,8 +35,11 @@ export async function POST(request: Request) {
       where: { id: session.user.id },
     })
 
-    // Get memory context (product knowledge + preferences)
-    const knowledgeContext = await getKnowledgeContext(session.user.id)
+    // Get memory context (product knowledge + preferences + restaurants)
+    const [knowledgeContext, restaurantContext] = await Promise.all([
+      getKnowledgeContext(session.user.id),
+      getRestaurantContext(session.user.id),
+    ])
 
     // Build personalized system prompt
     const sauceKnowledge = await getSauceKnowledgeForPrompt()
@@ -47,7 +51,7 @@ export async function POST(request: Request) {
       SALES_COACH_PROMPT + "\n\n" + sauceKnowledge + localeInstruction
 
     const systemPrompt = buildPersonalizedPrompt(
-      basePrompt + knowledgeContext,
+      basePrompt + knowledgeContext + restaurantContext,
       {
         name: user?.name,
         experience: user?.experience,
