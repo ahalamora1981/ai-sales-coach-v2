@@ -49,6 +49,10 @@ const CUISINE_KEYWORDS: Record<string, string[]> = {
   hubei: ["hubei", "湖北", "鄂菜"],
   xinjiang: ["xinjiang", "新疆", "清真"],
   yunnan: ["yunnan", "云南", "滇菜"],
+  western: ["western", "西餐", "西式", "牛排", "意面", "披萨", "沙拉"],
+  japanese: ["japanese", "日餐", "日式", "日料", "寿司", "刺身"],
+  korean: ["korean", "韩餐", "韩式", "韩国", "烤肉"],
+  southeast_asian: ["thai", "越南", "东南亚", "泰餐"],
 }
 
 const REGION_KEYWORDS: Record<string, string[]> = {
