@@ -28,7 +28,7 @@ services:
       - .:/app
       - node_modules:/app/node_modules
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=${DATABASE_URL_DEV}
       - QWEN_API_KEY=${QWEN_API_KEY}
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - QWEN_MODEL=${QWEN_MODEL}
@@ -37,7 +37,7 @@ services:
       - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL}
       - AUTH_SECRET=${AUTH_SECRET}
       - AUTH_TRUST_HOST=true
-      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - NEXTAUTH_URL=${NEXTAUTH_URL_DEV}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - NODE_ENV=development
     command: >

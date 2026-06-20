@@ -24,7 +24,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=${DATABASE_URL_PRD}
       - QWEN_API_KEY=${QWEN_API_KEY}
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - QWEN_MODEL=${QWEN_MODEL}
@@ -33,7 +33,7 @@ services:
       - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL}
       - AUTH_SECRET=${AUTH_SECRET}
       - AUTH_TRUST_HOST=true
-      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - NEXTAUTH_URL=${NEXTAUTH_URL_PRD}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
     depends_on:
       db:
