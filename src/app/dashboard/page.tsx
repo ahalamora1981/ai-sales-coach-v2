@@ -26,8 +26,14 @@ export default function DashboardPage() {
   const firstName = session?.user?.name?.split(" ")[0] || ""
 
   useEffect(() => {
-    fetch("/api/dashboard/stats").then(r => r.json()).then(setStats)
-    fetch("/api/dashboard/knowledge").then(r => r.json()).then(setKnowledge)
+    fetch("/api/dashboard/stats", { credentials: "include" })
+      .then(r => r.ok ? r.json() : { scanCount: 0, chatCount: 0 })
+      .then(setStats)
+      .catch(() => setStats({ scanCount: 0, chatCount: 0 }))
+    fetch("/api/dashboard/knowledge", { credentials: "include" })
+      .then(r => r.ok ? r.json() : { totalSauces: 0, totalCategories: 0, categories: [] })
+      .then(setKnowledge)
+      .catch(() => setKnowledge({ totalSauces: 0, totalCategories: 0, categories: [] }))
   }, [])
 
   return (
