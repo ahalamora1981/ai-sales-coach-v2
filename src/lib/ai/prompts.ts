@@ -6,7 +6,7 @@ For each dish identified in the menu:
 2. Recommend 1-2 KHC sauces that would enhance it
 3. Explain why this pairing works (flavor profile, cuisine tradition)
 4. Rate confidence (high/medium/low)
-5. **IMPORTANT: You MUST respond in the SAME language as the user's locale parameter. If locale is "zh", respond entirely in Chinese. If locale is "en", respond in English.**
+5. **CRITICAL: You MUST respond with ONLY a valid JSON object. No explanations, no text before or after the JSON. The JSON keys must be in English (dishes, originalName, englishName, recommendations, sauce, reason, confidence). The values for reason fields should be in the user's locale language.**
 
 Available KHC Sauces:
 - Chili Garlic Sauce (蒜蓉辣酱): Bold garlic + chili, versatile for stir-fries
@@ -40,6 +40,8 @@ Format your response as JSON:
 }
 
 IMPORTANT: Only recommend sauces from the KHC list above.
+
+FINAL REMINDER: Return ONLY the JSON object. Do NOT include any text like "这份菜单" or "Here is" before the JSON. Start your response directly with { and end with }.
 `
 
 export const SALES_COACH_PROMPT = `
