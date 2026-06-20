@@ -641,68 +641,75 @@ export function detectStruggle(
 }
 
 /**
- * Store sales scenario memory
+ * Store knowledge point from thumbs up
  */
-export async function storeScenarioMemory(
+export async function storeKnowledgePoint(
   userId: string,
   conversationId: string,
-  scenario: {
-    scenarioType: ScenarioType
-    sauce?: string
-    outcome: "success" | "struggle" | "practice"
-    strugglePoints?: string[]
-    userMessage: string
-    aiResponse: string
-  }
+  aiResponse: string
 ): Promise<void> {
-  const content = `${scenario.outcome === "struggle" ? "Struggled with" : "Practiced"} ${scenario.scenarioType}${scenario.sauce ? ` for ${scenario.sauce}` : ""}`
+  // Extract a concise knowledge point from the AI response
+  // Take the first sentence or first 100 characters as the knowledge point
+  let knowledgePoint = aiResponse
+    .split(/[。！？\.\!\?]/)
+    .filter(s => s.trim().length > 10)
+    .slice(0, 2)
+    .join("。")
+    .trim()
   
-  // Check if we already have a similar scenario memory
+  // Limit length
+  if (knowledgePoint.length > 150) {
+    knowledgePoint = knowledgePoint.substring(0, 147) + "..."
+  }
+  
+  if (!knowledgePoint) {
+    knowledgePoint = aiResponse.substring(0, 100).trim()
+  }
+
+  // Check if similar knowledge point exists
   const existing = await prisma.userMemory.findFirst({
     where: {
       userId,
-      memoryType: "scenario",
-      content,
+      memoryType: "knowledge_point",
     },
+    orderBy: { createdAt: "desc" },
   })
 
+  // Avoid duplicates (check if content is similar)
   if (existing) {
-    // Update practice count
-    const existingMeta = existing.metadata as Record<string, unknown>
-    await prisma.userMemory.update({
-      where: { id: existing.id },
-      data: {
-        metadata: {
-          ...existingMeta,
-          practiceCount: ((existingMeta?.practiceCount as number) || 1) + 1,
-          lastPracticed: new Date().toISOString(),
-          outcome: scenario.outcome,
-        },
-        updatedAt: new Date(),
-      },
-    })
-  } else {
-    // Create new scenario memory
-    await prisma.userMemory.create({
-      data: {
-        userId,
-        memoryType: "scenario",
-        content,
-        metadata: {
-          conversationId,
-          scenarioType: scenario.scenarioType,
-          sauce: scenario.sauce,
-          outcome: scenario.outcome,
-          strugglePoints: scenario.strugglePoints || [],
-          userMessage: scenario.userMessage.slice(0, 200),
-          aiResponse: scenario.aiResponse.slice(0, 200),
-          practiceCount: 1,
-          firstPracticed: new Date().toISOString(),
-          lastPracticed: new Date().toISOString(),
-        },
-      },
-    })
+    const existingContent = existing.content.toLowerCase()
+    const newContent = knowledgePoint.toLowerCase()
+    if (existingContent === newContent || existingContent.includes(newContent)) {
+      return // Skip if duplicate
+    }
   }
+
+  await prisma.userMemory.create({
+    data: {
+      userId,
+      memoryType: "knowledge_point",
+      content: knowledgePoint,
+      metadata: {
+        conversationId,
+        originalResponse: aiResponse.slice(0, 500),
+        learnedAt: new Date().toISOString(),
+      },
+    },
+  })
+}
+
+/**
+ * Get knowledge points for display
+ */
+export async function getKnowledgePoints(userId: string) {
+  return prisma.userMemory.findMany({
+    where: {
+      userId,
+      memoryType: "knowledge_point",
+    },
+    orderBy: { createdAt: "desc" },
+    take: 20,
+  })
 }
 
 /**

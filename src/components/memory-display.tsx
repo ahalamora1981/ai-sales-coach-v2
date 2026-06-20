@@ -129,14 +129,6 @@ export function MemoryDisplay() {
     dishes: (m.metadata?.dishesScanned as string[]) || [],
   }))
 
-  // Get scenario stats
-  const scenarioStruggles = scenarioMemories.filter(
-    (m) => m.metadata?.outcome === "struggle"
-  )
-  const scenarioSuccesses = scenarioMemories.filter(
-    (m) => m.metadata?.outcome === "success"
-  )
-
   return (
     <div className="bg-white rounded-xl border border-hairline p-6 space-y-6">
       <h3 className="text-xl font-semibold text-ink">
@@ -164,55 +156,12 @@ export function MemoryDisplay() {
         </Collapsible>
       )}
 
-      {/* Preferences */}
-      {(cuisinePrefs.length > 0 || regionPrefs.length > 0) && (
-        <Collapsible
-          title={locale === "zh" ? `偏好标签 (${cuisinePrefs.length + regionPrefs.length})` : `Preferences (${cuisinePrefs.length + regionPrefs.length})`}
-          defaultOpen={false}
-        >
-          <div className="space-y-3">
-            {cuisinePrefs.length > 0 && (
-              <div>
-                <p className="text-sm font-medium text-ink mb-2">
-                  {locale === "zh" ? "菜系偏好" : "Cuisine Focus"}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {cuisinePrefs.map((cuisine) => (
-                    <span
-                      key={cuisine}
-                      className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                    >
-                      {getCuisineName(cuisine)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {regionPrefs.length > 0 && (
-              <div>
-                <p className="text-sm font-medium text-ink mb-2">
-                  {locale === "zh" ? "地区偏好" : "Region Focus"}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {regionPrefs.map((region) => (
-                    <span
-                      key={region}
-                      className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                    >
-                      {getRegionName(region)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </Collapsible>
-      )}
 
-      {/* Restaurants */}
+
+      {/* Scanned Menus */}
       {restaurants.length > 0 && (
         <Collapsible
-          title={locale === "zh" ? `扫描记录 (${restaurants.length})` : `Scan History (${restaurants.length})`}
+          title={locale === "zh" ? `已扫描菜单 (${restaurants.length})` : `Scanned Menus (${restaurants.length})`}
           defaultOpen={false}
         >
           <div className="space-y-3">
@@ -242,43 +191,24 @@ export function MemoryDisplay() {
         </Collapsible>
       )}
 
-      {/* Scenario Practice */}
-      {(scenarioStruggles.length > 0 || scenarioSuccesses.length > 0) && (
+      {/* Knowledge Points (from thumbs up) */}
+      {knowledgePointMemories.length > 0 && (
         <Collapsible
-          title={locale === "zh" ? "练习记录" : "Practice History"}
+          title={locale === "zh" ? `已学习知识点 (${knowledgePointMemories.length})` : `Learned Knowledge Points (${knowledgePointMemories.length})`}
           defaultOpen={false}
         >
-          <div className="space-y-3">
-            {scenarioStruggles.length > 0 && (
-              <div>
-                <p className="text-sm font-medium text-ink mb-2">
-                  {locale === "zh" ? "需要加强" : "Areas to Improve"}
-                </p>
-                <div className="space-y-2">
-                  {scenarioStruggles.slice(0, 3).map((s) => (
-                    <div key={s.id} className="flex items-center gap-2 text-sm">
-                      <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                      <span className="text-muted">{s.content}</span>
-                    </div>
-                  ))}
+          <div className="space-y-2">
+            {knowledgePointMemories.map((point) => (
+              <div
+                key={point.id}
+                className="p-3 bg-surface-soft rounded-lg text-sm text-body"
+              >
+                <div className="flex items-start gap-2">
+                  <span className="text-primary mt-0.5">✓</span>
+                  <span>{point.content}</span>
                 </div>
               </div>
-            )}
-            {scenarioSuccesses.length > 0 && (
-              <div>
-                <p className="text-sm font-medium text-ink mb-2">
-                  {locale === "zh" ? "已掌握" : "Mastered"}
-                </p>
-                <div className="space-y-2">
-                  {scenarioSuccesses.slice(0, 3).map((s) => (
-                    <div key={s.id} className="flex items-center gap-2 text-sm">
-                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                      <span className="text-muted">{s.content}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            ))}
           </div>
         </Collapsible>
       )}
