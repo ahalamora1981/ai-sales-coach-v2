@@ -30,6 +30,11 @@ export default function ChatPage() {
   const [conversationId, setConversationId] = useState<string | null>(null)
   const [feedbackSent, setFeedbackSent] = useState<Record<string, string>>({})
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  
+  // Get last assistant message ID for feedback button
+  const lastAssistantMessageId = [...messages]
+    .reverse()
+    .find((m) => m.role === "assistant" && m.content)?.id
   const searchParams = useSearchParams()
 
   // Load history or context on mount
@@ -294,27 +299,7 @@ export default function ChatPage() {
                   message.content
                 )}
               </div>
-              {/* Thumbs up button inside assistant message */}
-              {message.role === "assistant" && message.content && !feedbackSent[message.id] && (
-                <div className="mt-2 pt-2 border-t border-hairline/50">
-                  <button
-                    onClick={() => handleFeedback(message.id, "thumbs_up")}
-                    className="p-1 rounded hover:bg-green-100 text-muted hover:text-green-600 transition-colors"
-                    title={locale === "zh" ? "有帮助" : "Helpful"}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                    </svg>
-                  </button>
-                </div>
-              )}
-              {message.role === "assistant" && feedbackSent[message.id] && (
-                <div className="mt-2 pt-2 border-t border-hairline/50">
-                  <span className="text-xs text-muted">
-                    {locale === "zh" ? "已标记有帮助" : "Marked as helpful"}
-                  </span>
-                </div>
-              )}
+
             </div>
           </div>
         ))}
@@ -331,7 +316,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input Area */}
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 flex gap-2 items-center">
         <input
           type="text"
           value={input}
@@ -348,6 +333,23 @@ export default function ChatPage() {
         >
           {t.send}
         </Button>
+        {/* Thumbs up button for last assistant message */}
+        {lastAssistantMessageId && !feedbackSent[lastAssistantMessageId] && (
+          <button
+            onClick={() => handleFeedback(lastAssistantMessageId, "thumbs_up")}
+            className="p-2 rounded-lg hover:bg-green-100 text-muted hover:text-green-600 transition-colors"
+            title={locale === "zh" ? "有帮助" : "Helpful"}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+            </svg>
+          </button>
+        )}
+        {lastAssistantMessageId && feedbackSent[lastAssistantMessageId] && (
+          <span className="text-xs text-muted">
+            {locale === "zh" ? "已标记" : "Marked"}
+          </span>
+        )}
       </div>
     </div>
   )

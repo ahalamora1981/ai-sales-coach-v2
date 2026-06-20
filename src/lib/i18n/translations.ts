@@ -314,7 +314,7 @@ const zh: Translations = {
     greeting: "你好！我是您的 AI 专属陪练。",
     greetingDesc:
       "我可以帮助您了解产品知识、销售技巧和 KHC 酱料的菜单搭配建议。今天想学些什么？",
-    aiCoachLabel: "🤖 AI 教练",
+    aiCoachLabel: "🤖 AI 陪练",
     typeMessage: "输入消息...",
     failedToGetResponse: "抱歉，出现错误。请重试。",
   },
