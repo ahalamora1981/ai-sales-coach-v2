@@ -4,6 +4,8 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/lib/i18n/context"
+import { Collapsible } from "@/components/ui/collapsible"
+import { sauceKnowledgeBase, cuisineKnowledgeBase, categoryNames } from "@/lib/knowledge-data"
 import { useEffect, useState } from "react"
 
 interface DashboardStats {
@@ -11,17 +13,10 @@ interface DashboardStats {
   chatCount: number
 }
 
-interface KnowledgeBase {
-  totalSauces: number
-  totalCategories: number
-  categories: { name: string; count: number }[]
-}
-
 export default function DashboardPage() {
   const { data: session } = useSession()
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const [stats, setStats] = useState<DashboardStats>({ scanCount: 0, chatCount: 0 })
-  const [knowledge, setKnowledge] = useState<KnowledgeBase>({ totalSauces: 0, totalCategories: 0, categories: [] })
 
   const firstName = session?.user?.name?.split(" ")[0] || ""
 
@@ -30,11 +25,16 @@ export default function DashboardPage() {
       .then(r => r.ok ? r.json() : { scanCount: 0, chatCount: 0 })
       .then(setStats)
       .catch(() => setStats({ scanCount: 0, chatCount: 0 }))
-    fetch("/api/dashboard/knowledge", { credentials: "include" })
-      .then(r => r.ok ? r.json() : { totalSauces: 0, totalCategories: 0, categories: [] })
-      .then(setKnowledge)
-      .catch(() => setKnowledge({ totalSauces: 0, totalCategories: 0, categories: [] }))
   }, [])
+
+  // Group sauces by category
+  const saucesByCategory = sauceKnowledgeBase.reduce((acc, sauce) => {
+    if (!acc[sauce.category]) {
+      acc[sauce.category] = []
+    }
+    acc[sauce.category].push(sauce)
+    return acc
+  }, {} as Record<string, typeof sauceKnowledgeBase>)
 
   return (
     <div className="space-y-8">
@@ -81,41 +81,6 @@ export default function DashboardPage() {
 
       {/* Knowledge Base & Usage Stats */}
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Knowledge Base */}
-        <div className="bg-white rounded-xl border border-hairline p-6">
-          <h3 className="text-xl font-semibold text-ink mb-2">
-            {t.dashboard.knowledgeBase}
-          </h3>
-          <p className="text-base text-muted mb-4">
-            {t.dashboard.knowledgeBaseDesc}
-          </p>
-          <div className="space-y-2 mb-4">
-            <p className="text-lg font-medium text-ink">
-              {knowledge.totalSauces} {t.dashboard.sauces}
-            </p>
-            <p className="text-base text-muted">
-              {knowledge.totalCategories} {t.dashboard.categories}
-            </p>
-          </div>
-          {knowledge.categories.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
-              {knowledge.categories.map((cat) => (
-                <span
-                  key={cat.name}
-                  className="px-3 py-1 bg-surface-soft rounded-full text-sm text-muted"
-                >
-                  {cat.name} ({cat.count})
-                </span>
-              ))}
-            </div>
-          )}
-          <Link href="/dashboard/scanner">
-            <Button variant="outline" size="sm">
-              {t.dashboard.viewAllSauces}
-            </Button>
-          </Link>
-        </div>
-
         {/* Usage Stats */}
         <div className="bg-white rounded-xl border border-hairline p-6">
           <h3 className="text-xl font-semibold text-ink mb-2">
@@ -143,14 +108,128 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Knowledge Base Overview */}
+        <div className="bg-white rounded-xl border border-hairline p-6">
+          <h3 className="text-xl font-semibold text-ink mb-2">
+            {t.dashboard.knowledgeBase}
+          </h3>
+          <p className="text-base text-muted mb-4">
+            {t.dashboard.knowledgeBaseDesc}
+          </p>
+          <div className="space-y-2">
+            <p className="text-lg font-medium text-ink">
+              {sauceKnowledgeBase.length} {t.dashboard.sauces}
+            </p>
+            <p className="text-base text-muted">
+              {Object.keys(saucesByCategory).length} {t.dashboard.categories}
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Recent Activity Placeholder */}
+      {/* Detailed Knowledge Base */}
       <div className="bg-white rounded-xl border border-hairline p-6">
         <h3 className="text-xl font-semibold text-ink mb-4">
-          {t.dashboard.recentActivity}
+          {locale === "zh" ? "详细知识库" : "Detailed Knowledge Base"}
         </h3>
-        <p className="text-muted text-base">{t.dashboard.noActivity}</p>
+        
+        <div className="space-y-4">
+          {/* Cuisines Section */}
+          <Collapsible 
+            title={locale === "zh" ? "🍜 菜系知识" : "🍜 Cuisine Knowledge"}
+            defaultOpen={true}
+          >
+            <div className="space-y-4">
+              {cuisineKnowledgeBase.map((cuisine) => (
+                <div key={cuisine.id} className="p-4 bg-surface-soft rounded-lg">
+                  <h4 className="text-lg font-semibold text-ink mb-2">
+                    {locale === "zh" ? cuisine.nameZh : cuisine.name}
+                  </h4>
+                  <p className="text-base text-muted mb-2">{cuisine.characteristics}</p>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="font-medium text-ink mb-1">
+                        {locale === "zh" ? "风味特点" : "Flavor Profile"}
+                      </p>
+                      <p className="text-muted">{cuisine.flavorProfile}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-ink mb-1">
+                        {locale === "zh" ? "代表菜品" : "Signature Dishes"}
+                      </p>
+                      <p className="text-muted">{cuisine.signatureDishes.join("、")}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-ink mb-1">
+                        {locale === "zh" ? "推荐酱料" : "Recommended Sauces"}
+                      </p>
+                      <p className="text-muted">{cuisine.sauceRecommendations.join("、")}</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-ink mb-1">
+                        {locale === "zh" ? "核心调料" : "Key Ingredients"}
+                      </p>
+                      <p className="text-muted">{cuisine.keyIngredients.join("、")}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Collapsible>
+
+          {/* Sauces Section by Category */}
+          {Object.entries(saucesByCategory).map(([category, sauces]) => (
+            <Collapsible 
+              key={category}
+              title={`${categoryNames[category] || category} (${sauces.length}${locale === "zh" ? "款" : " sauces"})`}
+            >
+              <div className="space-y-4">
+                {sauces.map((sauce) => (
+                  <div key={sauce.id} className="p-4 bg-surface-soft rounded-lg">
+                    <h4 className="text-lg font-semibold text-ink mb-1">
+                      {locale === "zh" ? sauce.nameZh : sauce.name}
+                    </h4>
+                    <p className="text-sm text-muted mb-2">{sauce.description}</p>
+                    
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="font-medium text-ink mb-1">
+                          {locale === "zh" ? "特点" : "Features"}
+                        </p>
+                        <p className="text-muted">{sauce.keyFeatures.join("、")}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-ink mb-1">
+                          {locale === "zh" ? "使用方法" : "Usage"}
+                        </p>
+                        <p className="text-muted">{sauce.usageMethods[0]}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-ink mb-1">
+                          {locale === "zh" ? "搭配推荐" : "Best Pairings"}
+                        </p>
+                        <p className="text-muted">{sauce.bestPairings.join("、")}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-ink mb-1">
+                          {locale === "zh" ? "专业建议" : "Pro Tips"}
+                        </p>
+                        <p className="text-muted">{sauce.proTips[0]}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-2 text-sm">
+                      <p className="text-muted">
+                        <span className="font-medium">{locale === "zh" ? "保质期" : "Shelf Life"}:</span> {sauce.shelfLife}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Collapsible>
+          ))}
+        </div>
       </div>
     </div>
   )
