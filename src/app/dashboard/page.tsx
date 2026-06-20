@@ -18,7 +18,7 @@ export default function DashboardPage() {
   const { t, locale } = useLanguage()
   const [stats, setStats] = useState<DashboardStats>({ scanCount: 0, chatCount: 0 })
 
-  const firstName = session?.user?.name?.split(" ")[0] || ""
+  const firstName = session?.user?.name?.split(" (")[0] || ""
 
   useEffect(() => {
     fetch("/api/dashboard/stats", { credentials: "include" })
