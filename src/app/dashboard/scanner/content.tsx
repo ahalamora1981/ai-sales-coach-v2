@@ -145,48 +145,20 @@ export default function ScannerPage() {
         const data = await response.json()
         setResults(data.dishes || [])
       } else if (textContent) {
-        // Text menu scan - send as message to chat API (streaming)
-        const response = await fetch("/api/chat", {
+        // Text menu scan - use dedicated text scanner API (returns JSON)
+        const response = await fetch("/api/scanner/text", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message: `Analyze this menu and recommend KHC sauces for each dish:\n\n${textContent}`,
-            model: "qwen",
-            locale,
-          }),
+          body: JSON.stringify({ text: textContent, locale }),
         })
 
         if (!response.ok) {
-          throw new Error(t.scanner.failedToScan)
+          const data = await response.json()
+          throw new Error(data.error || t.scanner.failedToScan)
         }
 
-        // Read streaming response
-        const reader = response.body?.getReader()
-        const decoder = new TextDecoder()
-        let fullContent = ""
-
-        if (reader) {
-          while (true) {
-            const { done, value } = await reader.read()
-            if (done) break
-            fullContent += decoder.decode(value, { stream: true })
-          }
-        }
-
-        // For text menus, we show the AI response as a single result
-        setResults([
-          {
-            originalName: locale === "zh" ? "菜单分析" : "Menu Analysis",
-            englishName: undefined,
-            recommendations: [
-              {
-                sauce: "AI Analysis",
-                reason: fullContent,
-                confidence: "high",
-              },
-            ],
-          },
-        ])
+        const data = await response.json()
+        setResults(data.dishes || [])
       }
     } catch (err) {
       setError(
