@@ -207,11 +207,6 @@ export default function ScannerPage() {
         <p className="text-lg text-muted mt-1">{t.scanner.subtitle}</p>
       </div>
 
-      {/* Model Notice */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-base text-blue-800">
-        {t.scanner.visionNotice}
-      </div>
-
       {/* Upload Area */}
       <div
         className="bg-white border-2 border-dashed border-hairline rounded-xl p-8 text-center hover:border-primary transition-colors cursor-pointer"
