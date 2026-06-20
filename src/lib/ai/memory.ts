@@ -298,7 +298,7 @@ export async function buildMemoryContext(
     }),
     prisma.userMemory.findMany({
       where: { userId, memoryType: "preference" },
-      orderBy: { metadata: { confidence: "desc" } },
+      orderBy: { updatedAt: "desc" },
     }),
   ])
 
@@ -312,11 +312,16 @@ export async function buildMemoryContext(
     .slice(0, 5)
     .map((m) => m.content)
 
-  // Extract preferences
+  // Extract preferences (sort by confidence manually)
   const preferences = preferenceMemories
     .filter((m) => {
       const meta = m.metadata as Record<string, unknown>
       return (meta?.confidence as number || 0) >= 0.5
+    })
+    .sort((a, b) => {
+      const confA = (a.metadata as Record<string, unknown>)?.confidence as number || 0
+      const confB = (b.metadata as Record<string, unknown>)?.confidence as number || 0
+      return confB - confA
     })
     .map((m) => ({
       content: m.content,
@@ -372,7 +377,7 @@ export async function getPreferenceContext(userId: string): Promise<string> {
       userId,
       memoryType: "preference",
     },
-    orderBy: { metadata: { confidence: "desc" } },
+    orderBy: { updatedAt: "desc" },
   })
 
   if (preferences.length === 0) {
