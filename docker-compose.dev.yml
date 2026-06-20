@@ -28,7 +28,7 @@ services:
       - .:/app
       - node_modules:/app/node_modules
     environment:
-      - DATABASE_URL=postgresql://postgres:password@db:5432/ai_sales_coach
+      - DATABASE_URL=${DATABASE_URL}
       - QWEN_API_KEY=${QWEN_API_KEY}
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - QWEN_MODEL=${QWEN_MODEL}
