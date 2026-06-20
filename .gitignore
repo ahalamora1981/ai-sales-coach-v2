@@ -37,3 +37,6 @@ prisma/migrations/
 
 # temp files
 cookies.txt
+
+# pnpm store
+.pnpm-store/

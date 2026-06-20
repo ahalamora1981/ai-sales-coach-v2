@@ -37,7 +37,8 @@ services:
       - NEXTAUTH_SECRET=${AUTH_SECRET}
       - NODE_ENV=development
     command: >
-      sh -c "npm install -g pnpm@9 &&
+      sh -c "apt-get update -y && apt-get install -y openssl &&
+             npm install -g pnpm@9 &&
              pnpm install &&
              npx prisma generate &&
              pnpm dev"
