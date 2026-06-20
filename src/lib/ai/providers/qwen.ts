@@ -12,7 +12,7 @@ export class QwenProvider implements LLMProvider {
   constructor() {
     this.apiKey = process.env.QWEN_API_KEY || ""
     this.baseUrl = process.env.QWEN_BASE_URL || "https://dashscope.aliyuncs.com/compatible-mode/v1"
-    this.defaultModel = process.env.QWEN_MODEL || "qwen-vl-max"
+    this.defaultModel = process.env.QWEN_MODEL || "qwen3.7-plus"
   }
 
   async chat(messages: ChatMessage[], options?: ChatOptions): Promise<string> {
