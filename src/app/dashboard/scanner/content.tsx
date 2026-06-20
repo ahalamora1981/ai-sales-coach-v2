@@ -251,24 +251,6 @@ export default function ScannerPage() {
         )}
       </div>
 
-      {/* Scan Button */}
-      <div className="flex justify-center">
-        <Button
-          onClick={handleScan}
-          disabled={(!image && !textContent) || scanning}
-          size="lg"
-        >
-          {scanning ? (
-            <>
-              <span className="animate-spin mr-2">⏳</span>
-              {t.scanner.scanning}
-            </>
-          ) : (
-            <>{t.scanner.scanMenu}</>
-          )}
-        </Button>
-      </div>
-
       {/* Text Content Preview */}
       {textContent && (
         <div className="bg-surface-soft rounded-xl p-4">
@@ -291,6 +273,24 @@ export default function ScannerPage() {
           </pre>
         </div>
       )}
+
+      {/* Scan Button */}
+      <div className="flex justify-center">
+        <Button
+          onClick={handleScan}
+          disabled={(!image && !textContent) || scanning}
+          size="lg"
+        >
+          {scanning ? (
+            <>
+              <span className="animate-spin mr-2">⏳</span>
+              {t.scanner.scanning}
+            </>
+          ) : (
+            <>{t.scanner.scanMenu}</>
+          )}
+        </Button>
+      </div>
 
       {error && (
         <div className="bg-red-50 text-error text-sm p-4 rounded-lg">
