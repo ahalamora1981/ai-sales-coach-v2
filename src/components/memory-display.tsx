@@ -143,25 +143,7 @@ export function MemoryDisplay() {
         {locale === "zh" ? "学习档案" : "Learning Profile"}
       </h3>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-surface-soft rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-primary">{knownSauces.length}</p>
-          <p className="text-sm text-muted">{locale === "zh" ? "已学酱料" : "Sauces Learned"}</p>
-        </div>
-        <div className="bg-surface-soft rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-primary">{cuisinePrefs.length + regionPrefs.length}</p>
-          <p className="text-sm text-muted">{locale === "zh" ? "偏好标签" : "Preferences"}</p>
-        </div>
-        <div className="bg-surface-soft rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-primary">{restaurants.length}</p>
-          <p className="text-sm text-muted">{locale === "zh" ? "扫描记录" : "Scan History"}</p>
-        </div>
-        <div className="bg-surface-soft rounded-lg p-3 text-center">
-          <p className="text-2xl font-bold text-primary">{scenarioSuccesses.length}</p>
-          <p className="text-sm text-muted">{locale === "zh" ? "练习成功" : "Practices"}</p>
-        </div>
-      </div>
+
 
       {/* Knowledge - Sauces Learned */}
       {knownSauces.length > 0 && (
