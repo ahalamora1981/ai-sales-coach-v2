@@ -1,0 +1,37 @@
+The Garden Bistro 花园小馆
+
+【Appetizers 前菜】
+Caesar Salad 凯撒沙拉 .............. 48元
+Mushroom Soup 奶油蘑菇汤 ........... 38元
+French Onion Soup 法式洋葱汤 ........ 42元
+Bruschetta 意式烤面包 .............. 45元
+Spring Rolls 春卷 .................. 35元
+
+【Main Course 主菜】
+Grilled Ribeye Steak 西冷牛排 ........ 288元
+Beef Bourguignon 红酒炖牛肉 ......... 168元
+Pan-seared Salmon 香煎三文鱼 ........ 188元
+Chicken Cordon Bleu 蓝带鸡排 ......... 128元
+Spaghetti Carbonara 培根意面 ........ 78元
+Seafood Pasta 海鲜意面 .............. 98元
+Risotto with Mushroom 蘑菇烩饭 ....... 88元
+Fish and Chips 炸鱼薯条 .............. 78元
+
+【Pizzas 披萨】
+Margherita 玛格丽特披萨 ............. 68元
+Pepperoni 意式香肠披萨 .............. 78元
+Seafood Pizza 海鲜披萨 .............. 88元
+
+【Sauces 酱汁】
+Black Pepper Sauce 黑胡椒酱 .......... 15元
+Mushroom Sauce 蘑菇酱 ............... 15元
+BBQ Sauce 烧烤酱 ................... 12元
+
+【Desserts 甜品】
+Tiramisu 提拉米苏 .................. 48元
+Panna Cotta 意式奶冻 ................ 42元
+Chocolate Lava Cake 巧克力熔岩蛋糕 ... 52元
+
+【Beverages 饮品】
+Coffee 咖啡 ....................... 28元
+Fresh Juice 鲜榨果汁 .............. 32元

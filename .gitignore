@@ -33,7 +33,7 @@ next-env.d.ts
 prisma/migrations/
 
 # sample menus (local files)
-sample-menus/
+# sample-menus/
 
 # temp files
 cookies.txt
