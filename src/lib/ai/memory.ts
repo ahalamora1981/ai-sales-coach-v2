@@ -648,23 +648,52 @@ export async function storeKnowledgePoint(
   conversationId: string,
   aiResponse: string
 ): Promise<void> {
-  // Extract a concise knowledge point from the AI response
-  // Take the first sentence or first 100 characters as the knowledge point
-  let knowledgePoint = aiResponse
-    .split(/[。！？\.\!\?]/)
-    .filter(s => s.trim().length > 10)
-    .slice(0, 2)
-    .join("。")
-    .trim()
+  // Extract key knowledge point from AI response
+  let knowledgePoint = ""
   
-  // Limit length
-  if (knowledgePoint.length > 150) {
-    knowledgePoint = knowledgePoint.substring(0, 147) + "..."
+  // Try to find sales tips or key insights with patterns
+  const patterns = [
+    /话术[：:][\s]*["](.+?)["]/,
+    /建议[：:][\s]*["](.+?)["]/,
+    /可以强调[：:][\s]*(.+?)[。，]/,
+    /关键是[：:][\s]*(.+?)[。，]/,
+    /核心卖点[：:][\s]*(.+?)[。，]/,
+    /记住[：:][\s]*(.+?)[。，]/,
+  ]
+  
+  for (const pattern of patterns) {
+    const match = aiResponse.match(pattern)
+    if (match && match[1]) {
+      knowledgePoint = match[1].trim()
+      break
+    }
   }
   
+  // Fallback: find sentence about sauce/product
   if (!knowledgePoint) {
-    knowledgePoint = aiResponse.substring(0, 100).trim()
+    const sentences = aiResponse.split(/[。！？]/)
+    for (const sentence of sentences) {
+      const trimmed = sentence.trim()
+      if (trimmed.length > 15 && trimmed.length < 80 && 
+          (trimmed.includes("酱") || trimmed.includes("KHC") || 
+           trimmed.includes("搭配") || trimmed.includes("适合") ||
+           trimmed.includes("卖点") || trimmed.includes("风味"))) {
+        knowledgePoint = trimmed
+        break
+      }
+    }
   }
+  
+  // Final fallback
+  if (!knowledgePoint) {
+    knowledgePoint = aiResponse.substring(0, 60).trim()
+  }
+  
+  // Clean up
+  knowledgePoint = knowledgePoint
+    .replace(/^[，,、\s]+/, '')
+    .replace(/[，,\s]+$/, '')
+    .trim()
 
   // Check for exact duplicates only (last 5 knowledge points)
   const recentPoints = await prisma.userMemory.findMany({
