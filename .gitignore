@@ -34,3 +34,6 @@ prisma/migrations/
 
 # sample menus (local files)
 sample-menus/
+
+# temp files
+cookies.txt
