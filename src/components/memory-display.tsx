@@ -101,25 +101,13 @@ export function MemoryDisplay() {
 
   // Group memories by type
   const knowledgeMemories = memories.filter((m) => m.memoryType === "knowledge")
-  const preferenceMemories = memories.filter((m) => m.memoryType === "preference")
   const restaurantMemories = memories.filter((m) => m.memoryType === "restaurant")
-  const scenarioMemories = memories.filter((m) => m.memoryType === "scenario")
+  const knowledgePointMemories = memories.filter((m) => m.memoryType === "knowledge_point")
 
   // Get unique sauces from knowledge memories
   const knownSauces = Array.from(new Set(
     knowledgeMemories.map((m) => m.metadata?.sauceNameZh as string || m.metadata?.sauceName as string)
   )).filter(Boolean)
-
-  // Get preferences
-  const cuisinePrefs = preferenceMemories
-    .filter((m) => (m.metadata?.category as string) === "cuisine")
-    .map((m) => m.metadata?.value as string)
-    .filter(Boolean)
-
-  const regionPrefs = preferenceMemories
-    .filter((m) => (m.metadata?.category as string) === "region")
-    .map((m) => m.metadata?.value as string)
-    .filter(Boolean)
 
   // Get restaurants
   const restaurants = restaurantMemories.map((m) => ({
