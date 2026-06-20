@@ -117,7 +117,7 @@ export default function DashboardPage() {
           {/* Cuisines Section */}
           <Collapsible 
             title={locale === "zh" ? `菜系知识 (${cuisineKnowledgeBase.length})` : `Cuisine Knowledge (${cuisineKnowledgeBase.length})`}
-            defaultOpen={true}
+            defaultOpen={false}
           >
             <div className="space-y-4">
               {cuisineKnowledgeBase.map((cuisine) => (
