@@ -41,8 +41,7 @@ export default function LoginPage() {
       setError(t.invalidCredentials)
       setLoading(false)
     } else {
-      router.push("/dashboard")
-      router.refresh()
+      window.location.href = "/dashboard"
     }
   }
 
@@ -60,8 +59,7 @@ export default function LoginPage() {
       setError(t.invalidCredentials)
       setLoading(false)
     } else {
-      router.push("/dashboard")
-      router.refresh()
+      window.location.href = "/dashboard"
     }
   }
 
