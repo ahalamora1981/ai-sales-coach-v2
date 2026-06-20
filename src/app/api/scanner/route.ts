@@ -45,14 +45,18 @@ export async function POST(request: Request) {
     }> = []
 
     try {
-      // Try to extract JSON from the response
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/)
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0])
+      // Try to extract JSON from the response - find the first { and last }
+      const firstBrace = aiResponse.indexOf("{")
+      const lastBrace = aiResponse.lastIndexOf("}")
+      
+      if (firstBrace !== -1 && lastBrace > firstBrace) {
+        const jsonString = aiResponse.substring(firstBrace, lastBrace + 1)
+        const parsed = JSON.parse(jsonString)
         dishes = parsed.dishes || []
       }
-    } catch {
-      console.error("Failed to parse AI response as JSON")
+    } catch (e) {
+      console.error("Failed to parse AI response as JSON:", e)
+      console.error("AI Response preview:", aiResponse.substring(0, 500))
     }
 
     // Enhance recommendations with local sauce KB data
