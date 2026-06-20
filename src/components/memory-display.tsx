@@ -124,7 +124,7 @@ export function MemoryDisplay() {
         </div>
         <div className="bg-surface-soft rounded-lg p-3 text-center">
           <p className="text-2xl font-bold text-primary">{restaurants.length}</p>
-          <p className="text-sm text-muted">{locale === "zh" ? "扫描餐厅" : "Restaurants"}</p>
+          <p className="text-sm text-muted">{locale === "zh" ? "扫描记录" : "Scan History"}</p>
         </div>
         <div className="bg-surface-soft rounded-lg p-3 text-center">
           <p className="text-2xl font-bold text-primary">{scenarioSuccesses.length}</p>
@@ -154,7 +154,7 @@ export function MemoryDisplay() {
       {/* Preferences */}
       {(cuisinePrefs.length > 0 || regionPrefs.length > 0) && (
         <Collapsible
-          title={locale === "zh" ? "偏好设置" : "Preferences"}
+          title={locale === "zh" ? `偏好标签 (${cuisinePrefs.length + regionPrefs.length})` : `Preferences (${cuisinePrefs.length + regionPrefs.length})`}
           defaultOpen={false}
         >
           <div className="space-y-3">
