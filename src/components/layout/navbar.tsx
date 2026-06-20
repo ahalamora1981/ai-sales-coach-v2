@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/lib/i18n/context"
 import { LanguageToggle } from "@/components/ui/language-toggle"
+import { useState } from "react"
 
 // SVG Icons
 const DashboardIcon = ({ active }: { active: boolean }) => (
@@ -33,6 +34,12 @@ const HistoryIcon = ({ active }: { active: boolean }) => (
   </svg>
 )
 
+const UserIcon = ({ active }: { active: boolean }) => (
+  <svg className="w-6 h-6" fill={active ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24" strokeWidth={active ? 0 : 1.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+  </svg>
+)
+
 const navItems = [
   { href: "/dashboard", icon: DashboardIcon, labelKey: "dashboard" },
   { href: "/dashboard/scanner", icon: ScannerIcon, labelKey: "scanner" },
@@ -40,10 +47,22 @@ const navItems = [
   { href: "/dashboard/history", icon: HistoryIcon, labelKey: "history" },
 ]
 
+const experienceLabels: Record<string, Record<string, string>> = {
+  en: { beginner: "Beginner", intermediate: "Intermediate", expert: "Expert" },
+  zh: { beginner: "初级", intermediate: "中级", expert: "专家" },
+}
+
+const experienceColors: Record<string, string> = {
+  beginner: "bg-blue-100 text-blue-800",
+  intermediate: "bg-yellow-100 text-yellow-800",
+  expert: "bg-green-100 text-green-800",
+}
+
 export function Navbar() {
   const pathname = usePathname()
   const { data: session } = useSession()
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
+  const [showProfile, setShowProfile] = useState(false)
 
   const navLabels: Record<string, string> = {
     dashboard: t.nav.dashboard,
@@ -51,6 +70,18 @@ export function Navbar() {
     aiCoach: t.nav.aiCoach,
     history: t.nav.history,
   }
+
+  // Get initials from name
+  const getInitials = (name: string | null | undefined) => {
+    if (!name) return "?"
+    // For Chinese names like "小王 (Xiao Wang)", get first character
+    const chineseName = name.split(" (")[0]
+    if (chineseName) return chineseName.charAt(0)
+    return name.charAt(0).toUpperCase()
+  }
+
+  // Get experience from session (we'll need to add this to the session)
+  const experience = (session as any)?.user?.experience || "beginner"
 
   return (
     <>
@@ -84,23 +115,74 @@ export function Navbar() {
             </nav>
 
             {/* User Menu */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <LanguageToggle />
+              
               {session?.user && (
-                <div className="text-right">
-                  <p className="text-base font-medium text-ink">
-                    {session.user.name}
-                  </p>
-                  <p className="text-sm text-muted">{session.user.email}</p>
+                <div className="relative">
+                  <button
+                    onClick={() => setShowProfile(!showProfile)}
+                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-soft transition-colors"
+                  >
+                    {/* Avatar */}
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <span className="text-lg font-medium text-primary">
+                        {getInitials(session.user.name)}
+                      </span>
+                    </div>
+                    <div className="text-left hidden lg:block">
+                      <p className="text-base font-medium text-ink">
+                        {session.user.name}
+                      </p>
+                      <p className="text-sm text-muted">{session.user.email}</p>
+                    </div>
+                    <svg className="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {/* Dropdown */}
+                  {showProfile && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-40" 
+                        onClick={() => setShowProfile(false)}
+                      />
+                      <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-lg border border-hairline z-50 p-4">
+                        <div className="flex items-center gap-3 mb-3 pb-3 border-b border-hairline">
+                          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                            <span className="text-xl font-medium text-primary">
+                              {getInitials(session.user.name)}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-medium text-ink">{session.user.name}</p>
+                            <p className="text-sm text-muted">{session.user.email}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="mb-3 pb-3 border-b border-hairline">
+                          <p className="text-sm text-muted mb-1">{locale === "zh" ? "经验等级" : "Experience Level"}</p>
+                          <span className={cn("text-sm px-2 py-1 rounded-full", experienceColors[experience])}>
+                            {experienceLabels[locale][experience]}
+                          </span>
+                        </div>
+
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-muted"
+                          onClick={() => signOut({ callbackUrl: "/login" })}
+                        >
+                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                          </svg>
+                          {t.signOut}
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => signOut({ callbackUrl: "/login" })}
-              >
-                {t.signOut}
-              </Button>
             </div>
           </div>
         </div>
@@ -126,8 +208,70 @@ export function Navbar() {
               </Link>
             )
           })}
+          {/* Mobile Profile Button */}
+          <button
+            onClick={() => setShowProfile(!showProfile)}
+            className="flex flex-col items-center justify-center flex-1 h-full text-muted"
+          >
+            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+              <span className="text-xs font-medium text-primary">
+                {session?.user ? getInitials(session.user.name) : "?"}
+              </span>
+            </div>
+            <span className="text-xs mt-0.5">{locale === "zh" ? "我的" : "Me"}</span>
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Profile Modal */}
+      {showProfile && (
+        <div className="md:hidden fixed inset-0 z-50 flex items-end justify-center">
+          <div 
+            className="absolute inset-0 bg-black/50" 
+            onClick={() => setShowProfile(false)}
+          />
+          <div className="relative bg-white rounded-t-2xl w-full max-w-lg p-6 pb-24">
+            <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
+            
+            {session?.user && (
+              <>
+                <div className="flex items-center gap-4 mb-4 pb-4 border-b border-hairline">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-2xl font-medium text-primary">
+                      {getInitials(session.user.name)}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-lg font-medium text-ink">{session.user.name}</p>
+                    <p className="text-sm text-muted">{session.user.email}</p>
+                  </div>
+                </div>
+
+                <div className="mb-4 pb-4 border-b border-hairline">
+                  <p className="text-sm text-muted mb-2">{locale === "zh" ? "经验等级" : "Experience Level"}</p>
+                  <span className={cn("text-sm px-3 py-1 rounded-full", experienceColors[experience])}>
+                    {experienceLabels[locale][experience]}
+                  </span>
+                </div>
+
+                <div className="flex gap-3">
+                  <LanguageToggle />
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => signOut({ callbackUrl: "/login" })}
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    {t.signOut}
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 }
