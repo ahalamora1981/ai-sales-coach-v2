@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useLanguage } from "@/lib/i18n/context"
 import { Collapsible } from "@/components/ui/collapsible"
+import { sauceKnowledgeBase } from "@/lib/knowledge-data"
 
 interface Memory {
   id: string
@@ -125,24 +126,32 @@ export function MemoryDisplay() {
 
 
 
-      {/* Knowledge - Sauces Learned */}
-      {knownSauces.length > 0 && (
-        <Collapsible
-          title={locale === "zh" ? `已学习酱料 (${knownSauces.length})` : `Learned Sauces (${knownSauces.length})`}
-          defaultOpen={false}
-        >
-          <div className="flex flex-wrap gap-2">
-            {knownSauces.map((sauce) => (
-              <span
-                key={sauce}
-                className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
-              >
-                {sauce}
-              </span>
-            ))}
-          </div>
-        </Collapsible>
-      )}
+      {/* Sauce Encyclopedia */}
+      <Collapsible
+        title={locale === "zh" ? `酱料大全 (${sauceKnowledgeBase.length})` : `Sauce Encyclopedia (${sauceKnowledgeBase.length})`}
+        defaultOpen={false}
+      >
+        <div className="space-y-3">
+          {sauceKnowledgeBase.map((sauce) => (
+            <div
+              key={sauce.id}
+              className="p-3 bg-surface-soft rounded-lg"
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="font-medium text-ink">
+                    {locale === "zh" ? sauce.nameZh : sauce.name}
+                  </p>
+                  <p className="text-sm text-muted mt-1">{sauce.description}</p>
+                </div>
+                <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded">
+                  {sauce.category}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Collapsible>
 
 
 
