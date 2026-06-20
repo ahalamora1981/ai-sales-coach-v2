@@ -7,26 +7,12 @@ import { useLanguage } from "@/lib/i18n/context"
 import { Collapsible } from "@/components/ui/collapsible"
 import { MemoryDisplay } from "@/components/memory-display"
 import { sauceKnowledgeBase, cuisineKnowledgeBase, categoryNames } from "@/lib/knowledge-data"
-import { useEffect, useState } from "react"
-
-interface DashboardStats {
-  scanCount: number
-  chatCount: number
-}
 
 export default function DashboardPage() {
   const { data: session } = useSession()
   const { t, locale } = useLanguage()
-  const [stats, setStats] = useState<DashboardStats>({ scanCount: 0, chatCount: 0 })
 
   const firstName = session?.user?.name?.split(" (")[0] || ""
-
-  useEffect(() => {
-    fetch("/api/dashboard/stats", { credentials: "include" })
-      .then(r => r.ok ? r.json() : { scanCount: 0, chatCount: 0 })
-      .then(setStats)
-      .catch(() => setStats({ scanCount: 0, chatCount: 0 }))
-  }, [])
 
   // Group sauces by category
   const saucesByCategory = sauceKnowledgeBase.reduce((acc, sauce) => {
@@ -78,31 +64,6 @@ export default function DashboardPage() {
             </Button>
           </div>
         </Link>
-      </div>
-
-      {/* Usage Stats */}
-      <div className="bg-white rounded-xl border border-hairline p-6">
-        <h3 className="text-xl font-semibold text-ink mb-4">
-          {t.dashboard.usageStats}
-        </h3>
-        <div className="grid grid-cols-2 gap-4 max-w-md">
-          <div className="bg-surface-soft rounded-lg p-4 text-center">
-            <p className="text-3xl font-bold text-primary">
-              {stats.scanCount}
-            </p>
-            <p className="text-base text-muted mt-1">
-              {t.dashboard.menuScans}
-            </p>
-          </div>
-          <div className="bg-surface-soft rounded-lg p-4 text-center">
-            <p className="text-3xl font-bold text-primary">
-              {stats.chatCount}
-            </p>
-            <p className="text-base text-muted mt-1">
-              {t.dashboard.chatSessions}
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Memory Display */}
