@@ -2,13 +2,14 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useLanguage, Locale } from "@/lib/i18n/context"
+import { cn } from "@/lib/utils"
 
 const languages: { code: Locale; label: string }[] = [
   { code: "en", label: "English" },
   { code: "zh", label: "中文" },
 ]
 
-export function LanguageToggle() {
+export function LanguageToggle({ className }: { className?: string } = {}) {
   const { locale, setLocale, t } = useLanguage()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -29,7 +30,7 @@ export function LanguageToggle() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="px-3 py-1.5 text-sm font-medium border border-hairline rounded-lg hover:bg-surface-soft transition-colors flex items-center gap-2"
+        className={cn("px-3 py-2 text-sm font-medium border border-hairline rounded-lg hover:bg-surface-soft transition-colors flex items-center gap-2 h-11", className)}
       >
         <span>{current.code === "zh" ? "中文" : "English"}</span>
         <svg
