@@ -43,10 +43,17 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma* ./node_modules/
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
-USER nextjs
+# Copy bcryptjs for seeding
+COPY --from=builder /app/node_modules/bcryptjs ./node_modules/bcryptjs
+COPY --from=builder /app/node_modules/@types/bcryptjs ./node_modules/@types/bcryptjs
+
+# Copy entrypoint script
+COPY --chmod=755 docker-entrypoint.sh ./
+
+USER root
 
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["./docker-entrypoint.sh"]
