@@ -4,12 +4,31 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/lib/i18n/context"
+import { useEffect, useState } from "react"
+
+interface DashboardStats {
+  scanCount: number
+  chatCount: number
+}
+
+interface KnowledgeBase {
+  totalSauces: number
+  totalCategories: number
+  categories: { name: string; count: number }[]
+}
 
 export default function DashboardPage() {
   const { data: session } = useSession()
   const { t } = useLanguage()
+  const [stats, setStats] = useState<DashboardStats>({ scanCount: 0, chatCount: 0 })
+  const [knowledge, setKnowledge] = useState<KnowledgeBase>({ totalSauces: 0, totalCategories: 0, categories: [] })
 
   const firstName = session?.user?.name?.split(" ")[0] || ""
+
+  useEffect(() => {
+    fetch("/api/dashboard/stats").then(r => r.json()).then(setStats)
+    fetch("/api/dashboard/knowledge").then(r => r.json()).then(setKnowledge)
+  }, [])
 
   return (
     <div className="space-y-8">
@@ -54,39 +73,68 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* Quick Stats */}
-      <div className="bg-surface-soft rounded-xl p-6">
-        <h3 className="text-xl font-semibold text-ink mb-4">
-          {t.dashboard.quickStart}
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div className="bg-white rounded-lg p-4">
-            <div className="text-2xl mb-1 text-muted">•</div>
-            <p className="text-base text-muted">{t.dashboard.saucesCount}</p>
-            <p className="text-sm text-muted-soft">
-              {t.dashboard.inKnowledgeBase}
+      {/* Knowledge Base & Usage Stats */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Knowledge Base */}
+        <div className="bg-white rounded-xl border border-hairline p-6">
+          <h3 className="text-xl font-semibold text-ink mb-2">
+            {t.dashboard.knowledgeBase}
+          </h3>
+          <p className="text-base text-muted mb-4">
+            {t.dashboard.knowledgeBaseDesc}
+          </p>
+          <div className="space-y-2 mb-4">
+            <p className="text-lg font-medium text-ink">
+              {knowledge.totalSauces} {t.dashboard.sauces}
+            </p>
+            <p className="text-base text-muted">
+              {knowledge.totalCategories} {t.dashboard.categories}
             </p>
           </div>
-          <div className="bg-white rounded-lg p-4">
-            <div className="text-2xl mb-1 text-muted">•</div>
-            <p className="text-base text-muted">{t.dashboard.cuisinesCount}</p>
-            <p className="text-sm text-muted-soft">
-              {t.dashboard.cuisinesList}
-            </p>
-          </div>
-          <div className="bg-white rounded-lg p-4">
-            <div className="text-2xl mb-1 text-muted">•</div>
-            <p className="text-base text-muted">{t.dashboard.adaptiveAi}</p>
-            <p className="text-sm text-muted-soft">
-              {t.dashboard.adaptiveAiDesc}
-            </p>
-          </div>
-          <div className="bg-white rounded-lg p-4">
-            <div className="text-2xl mb-1 text-muted">•</div>
-            <p className="text-base text-muted">{t.dashboard.multiModel}</p>
-            <p className="text-sm text-muted-soft">
-              {t.dashboard.multiModelDesc}
-            </p>
+          {knowledge.categories.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {knowledge.categories.map((cat) => (
+                <span
+                  key={cat.name}
+                  className="px-3 py-1 bg-surface-soft rounded-full text-sm text-muted"
+                >
+                  {cat.name} ({cat.count})
+                </span>
+              ))}
+            </div>
+          )}
+          <Link href="/dashboard/scanner">
+            <Button variant="outline" size="sm">
+              {t.dashboard.viewAllSauces}
+            </Button>
+          </Link>
+        </div>
+
+        {/* Usage Stats */}
+        <div className="bg-white rounded-xl border border-hairline p-6">
+          <h3 className="text-xl font-semibold text-ink mb-2">
+            {t.dashboard.usageStats}
+          </h3>
+          <p className="text-base text-muted mb-4">
+            {t.dashboard.recentActivity}
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-surface-soft rounded-lg p-4 text-center">
+              <p className="text-3xl font-bold text-primary">
+                {stats.scanCount}
+              </p>
+              <p className="text-base text-muted mt-1">
+                {t.dashboard.menuScans}
+              </p>
+            </div>
+            <div className="bg-surface-soft rounded-lg p-4 text-center">
+              <p className="text-3xl font-bold text-primary">
+                {stats.chatCount}
+              </p>
+              <p className="text-base text-muted mt-1">
+                {t.dashboard.chatSessions}
+              </p>
+            </div>
           </div>
         </div>
       </div>

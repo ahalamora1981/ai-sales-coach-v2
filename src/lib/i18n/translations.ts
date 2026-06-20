@@ -149,17 +149,20 @@ const en: Translations = {
       "Chat with your AI coach for product knowledge, sales techniques, and personalized coaching.",
     startChatting: "Start Chatting →",
     quickStart: "Quick Start",
-    saucesCount: "12 Sauces",
-    inKnowledgeBase: "In Knowledge Base",
-    cuisinesCount: "4 Cuisines",
-    cuisinesList: "Sichuan, Cantonese...",
-    adaptiveAi: "Adaptive AI",
-    adaptiveAiDesc: "Learns from you",
-    multiModel: "Multi-Model",
-    multiModelDesc: "Qwen & DeepSeek",
     recentActivity: "Recent Activity",
     noActivity:
       "No recent activity yet. Start by using Menu Scanner or chatting with your AI coach.",
+    // Knowledge Base
+    knowledgeBase: "Sauce Knowledge Base",
+    knowledgeBaseDesc: "Kraft Heinz sauces and pairing recommendations",
+    viewAllSauces: "View All Sauces →",
+    categories: "categories",
+    sauces: "sauces",
+    // Usage Stats
+    usageStats: "Usage Statistics",
+    menuScans: "Menu Scans",
+    chatSessions: "Chat Sessions",
+    noData: "No data yet"
   },
   scanner: {
     title: "Menu Scanner",
@@ -263,16 +266,19 @@ const zh: Translations = {
       "与 AI 陪练对话，获取产品知识、销售技巧和个性化辅导。",
     startChatting: "开始聊天 →",
     quickStart: "快速开始",
-    saucesCount: "12 种酱料",
-    inKnowledgeBase: "知识库中",
-    cuisinesCount: "4 种菜系",
-    cuisinesList: "川菜、粤菜...",
-    adaptiveAi: "自适应 AI",
-    adaptiveAiDesc: "为您量身定制",
-    multiModel: "多模型",
-    multiModelDesc: "Qwen 和 DeepSeek",
     recentActivity: "最近活动",
     noActivity: "暂无活动记录。开始使用菜单精灵或与 AI 陪练聊天吧。",
+    // 知识库
+    knowledgeBase: "酱料知识库",
+    knowledgeBaseDesc: "KHC 酱料产品及搭配推荐",
+    viewAllSauces: "查看全部酱料 →",
+    categories: "个分类",
+    sauces: "款酱料",
+    // 使用统计
+    usageStats: "使用统计",
+    menuScans: "菜单扫描",
+    chatSessions: "陪练对话",
+    noData: "暂无数据"
   },
   scanner: {
     title: "菜单精灵",
