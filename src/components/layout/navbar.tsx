@@ -259,7 +259,7 @@ export function Navbar() {
                     <LanguageToggle />
                   </div>
                   <Button
-                    variant="outline"
+                    variant="destructive"
                     className="flex-1 h-11"
                     onClick={() => signOut({ callbackUrl: "/login" })}
                   >
