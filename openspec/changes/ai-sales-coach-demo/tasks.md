@@ -102,8 +102,8 @@
 ## 12. Testing & Demo Prep
 
 - [x] 12.1 Test all demo accounts login flow
-- [ ] 12.2 Test menu scanner with sample images
-- [ ] 12.3 Test chat with both Qwen and DeepSeek
-- [ ] 12.4 Verify adaptive memory across sessions
+- [x] 12.2 Test menu scanner with sample images
+- [x] 12.3 Test chat with both Qwen and DeepSeek
+- [x] 12.4 Verify adaptive memory across sessions
 - [x] 12.5 Run production build and test
-- [ ] 12.6 Prepare demo script and talking points
+- [x] 12.6 Prepare demo script and talking points
