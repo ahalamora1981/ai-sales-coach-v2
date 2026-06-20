@@ -22,6 +22,39 @@ interface MemoryStats {
 
 export function MemoryDisplay() {
   const { locale } = useLanguage()
+  
+  // Chinese mappings for cuisines and regions
+  const cuisineNames: Record<string, string> = {
+    sichuan: "川菜",
+    cantonese: "粤菜",
+    hunan: "湘菜",
+    shandong: "鲁菜",
+    jiangsu: "苏菜",
+    zhejiang: "浙菜",
+    fujian: "闽菜",
+    anhui: "徽菜",
+    henan: "豫菜",
+    northeast: "东北菜",
+    hubei: "鄂菜",
+    xinjiang: "新疆菜",
+    yunnan: "滇菜",
+  }
+  
+  const regionNames: Record<string, string> = {
+    beijing: "北京",
+    shanghai: "上海",
+    guangzhou: "广州",
+    chengdu: "成都",
+    chongqing: "重庆",
+  }
+  
+  const getCuisineName = (cuisine: string) => {
+    return locale === "zh" ? (cuisineNames[cuisine] || cuisine) : cuisine
+  }
+  
+  const getRegionName = (region: string) => {
+    return locale === "zh" ? (regionNames[region] || region) : region
+  }
   const [memories, setMemories] = useState<Memory[]>([])
   const [stats, setStats] = useState<MemoryStats>({
     knowledge: 0,
@@ -169,7 +202,7 @@ export function MemoryDisplay() {
                       key={cuisine}
                       className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
                     >
-                      {cuisine}
+                      {getCuisineName(cuisine)}
                     </span>
                   ))}
                 </div>
@@ -186,7 +219,7 @@ export function MemoryDisplay() {
                       key={region}
                       className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
                     >
-                      {region}
+                      {getRegionName(region)}
                     </span>
                   ))}
                 </div>
