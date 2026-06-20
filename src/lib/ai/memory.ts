@@ -416,8 +416,8 @@ export async function storeRestaurantMemory(
     }>
   }
 ): Promise<void> {
-  // Try to extract restaurant name from dishes or use a default
-  const restaurantName = scanResult.restaurantName || "Unknown Restaurant"
+  // Generate a unique restaurant name with timestamp if not provided
+  const restaurantName = scanResult.restaurantName || `Menu Scan ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
   
   // Extract all sauce names from recommendations
   const saucesPitched = Array.from(new Set(
@@ -666,22 +666,25 @@ export async function storeKnowledgePoint(
     knowledgePoint = aiResponse.substring(0, 100).trim()
   }
 
-  // Check if similar knowledge point exists
-  const existing = await prisma.userMemory.findFirst({
+  // Check for exact duplicates only (last 5 knowledge points)
+  const recentPoints = await prisma.userMemory.findMany({
     where: {
       userId,
       memoryType: "knowledge_point",
     },
     orderBy: { createdAt: "desc" },
+    take: 5,
   })
 
-  // Avoid duplicates (check if content is similar)
-  if (existing) {
-    const existingContent = existing.content.toLowerCase()
+  // Avoid exact duplicates
+  const isDuplicate = recentPoints.some(p => {
+    const existingContent = p.content.toLowerCase()
     const newContent = knowledgePoint.toLowerCase()
-    if (existingContent === newContent || existingContent.includes(newContent)) {
-      return // Skip if duplicate
-    }
+    return existingContent === newContent
+  })
+
+  if (isDuplicate) {
+    return // Skip exact duplicates
   }
 
   await prisma.userMemory.create({
