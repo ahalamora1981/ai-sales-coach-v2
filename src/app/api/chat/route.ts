@@ -4,6 +4,11 @@ import { SALES_COACH_PROMPT, buildPersonalizedPrompt } from "@/lib/ai/prompts"
 import { getSauceKnowledgeForPrompt } from "@/lib/ai/sauce-kb"
 import { prisma } from "@/lib/db"
 import { auth } from "@/lib/auth"
+import {
+  getKnowledgeContext,
+  storeProductKnowledge,
+  storePreferences,
+} from "@/lib/ai/memory"
 
 export async function POST(request: Request) {
   try {
@@ -12,7 +17,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { message, model, conversationId, locale = "en", isContextInit = false } = await request.json()
+    const {
+      message,
+      model,
+      conversationId,
+      locale = "en",
+      isContextInit = false,
+    } = await request.json()
 
     if (!message) {
       return NextResponse.json({ error: "No message provided" }, { status: 400 })
@@ -21,23 +32,31 @@ export async function POST(request: Request) {
     // Get user profile for personalization
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      include: { memories: true },
     })
 
-    // Get relevant memories
-    const memories = user?.memories?.map((m: { content: string }) => m.content) || []
+    // Get memory context (product knowledge + preferences)
+    const knowledgeContext = await getKnowledgeContext(session.user.id)
 
     // Build personalized system prompt
     const sauceKnowledge = await getSauceKnowledgeForPrompt()
-    const localeInstruction = locale === "zh" ? "\n\n**请用中文回复所有内容。**" : "\n\n**Please respond in English.**"
-    const basePrompt = SALES_COACH_PROMPT + "\n\n" + sauceKnowledge + localeInstruction
+    const localeInstruction =
+      locale === "zh"
+        ? "\n\n**请用中文回复所有内容。**"
+        : "\n\n**Please respond in English.**"
+    const basePrompt =
+      SALES_COACH_PROMPT + "\n\n" + sauceKnowledge + localeInstruction
 
-    const systemPrompt = buildPersonalizedPrompt(basePrompt, {
-      name: user?.name,
-      experience: user?.experience,
-      preferences: user?.preferences as { cuisine?: string[]; region?: string[] } | null,
-      memories,
-    })
+    const systemPrompt = buildPersonalizedPrompt(
+      basePrompt + knowledgeContext,
+      {
+        name: user?.name,
+        experience: user?.experience,
+        preferences: user?.preferences as {
+          cuisine?: string[]
+          region?: string[]
+        } | null,
+      }
+    )
 
     // Get or create conversation
     let convId = conversationId
@@ -78,7 +97,6 @@ export async function POST(request: Request) {
     })
 
     // Build messages array for LLM
-    // For context init, add context as user message so AI knows what to respond to
     const llmMessages = [
       { role: "system" as const, content: systemPrompt },
       ...history.map((m: { role: string; content: string }) => ({
@@ -86,7 +104,7 @@ export async function POST(request: Request) {
         content: m.content,
       })),
     ]
-    
+
     // For context init, add context as a user message
     if (isContextInit) {
       llmMessages.push({
@@ -97,7 +115,7 @@ export async function POST(request: Request) {
 
     // Get LLM provider and create streaming response
     const provider = getProvider(model)
-    
+
     // Create a ReadableStream for streaming
     const encoder = new TextEncoder()
     let fullResponse = ""
@@ -116,26 +134,27 @@ export async function POST(request: Request) {
       },
     })
 
-    // Create a new stream that saves the message after completion
+    // Create a new stream that saves the message and stores memories after completion
     const convIdForSave = convId
     const modelForSave = model
     const historyLength = history.length
     const messageForTitle = message
-    
+    const userIdForMemory = session.user.id
+
     const wrappedStream = new ReadableStream({
       async start(controller) {
         try {
           // Tee the original stream to read it
           const reader = stream.getReader()
-          
+
           while (true) {
             const { done, value } = await reader.read()
             if (done) break
             controller.enqueue(value)
           }
-          
+
           controller.close()
-          
+
           // Save message after stream is fully consumed
           if (fullResponse) {
             await prisma.message.create({
@@ -152,9 +171,22 @@ export async function POST(request: Request) {
               await prisma.conversation.update({
                 where: { id: convIdForSave },
                 data: {
-                  title: messageForTitle.slice(0, 50) + (messageForTitle.length > 50 ? "..." : ""),
+                  title:
+                    messageForTitle.slice(0, 50) +
+                    (messageForTitle.length > 50 ? "..." : ""),
                 },
               })
+            }
+
+            // Store memories from this interaction
+            try {
+              await Promise.all([
+                storeProductKnowledge(userIdForMemory, message, fullResponse),
+                storePreferences(userIdForMemory, message),
+              ])
+            } catch (memoryError) {
+              // Memory storage errors shouldn't break the chat
+              console.error("Memory storage error:", memoryError)
             }
           }
         } catch (error) {

@@ -7,6 +7,7 @@ import {
 import { findSaucesForDish } from "@/lib/ai/sauce-kb"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
+import { storeProductKnowledge } from "@/lib/ai/memory"
 
 export async function POST(request: Request) {
   try {
@@ -98,6 +99,23 @@ export async function POST(request: Request) {
           recommendations: dish.recommendations,
         },
       })
+    }
+
+    // Store product knowledge memories from this scan
+    try {
+      // Extract all sauce names from recommendations
+      const allSauceNames = dishes
+        .flatMap((d) => d.recommendations.map((r) => r.sauce))
+        .join(", ")
+      
+      // Create a fake AI response with sauce names for memory extraction
+      const fakeAiResponse = `Recommended sauces: ${allSauceNames}`
+      const fakeUserMessage = dishes.map((d) => d.originalName).join(", ")
+      
+      await storeProductKnowledge(session.user.id, fakeUserMessage, fakeAiResponse)
+    } catch (memoryError) {
+      // Memory storage errors shouldn't break the scanner
+      console.error("Memory storage error:", memoryError)
     }
 
     return NextResponse.json({ dishes, conversationId: conversation.id })
