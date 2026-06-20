@@ -353,7 +353,7 @@ export async function getKnowledgeContext(userId: string): Promise<string> {
   let prompt = "\n\n## User Memory Context\n"
 
   if (context.knownSauces.length > 0) {
-    prompt += `\nAlready learned sauces: ${[...new Set(context.knownSauces)].join(", ")}`
+    prompt += `\nAlready learned sauces: ${Array.from(new Set(context.knownSauces)).join(", ")}`
     prompt += "\nInstructions: Don't repeat basic info they already know. Build on previously learned concepts."
   }
 
@@ -416,11 +416,9 @@ export async function storeRestaurantMemory(
   const restaurantName = scanResult.restaurantName || "Unknown Restaurant"
   
   // Extract all sauce names from recommendations
-  const saucesPitched = [
-    ...new Set(
-      scanResult.dishes.flatMap((d) => d.recommendations.map((r) => r.sauce))
-    ),
-  ]
+  const saucesPitched = Array.from(new Set(
+    scanResult.dishes.flatMap((d) => d.recommendations.map((r) => r.sauce))
+  ))
   
   // Extract all dish names
   const dishesScanned = scanResult.dishes.map((d) => d.originalName)
@@ -452,8 +450,8 @@ export async function storeRestaurantMemory(
       data: {
         metadata: {
           ...existingMeta,
-          dishesScanned: [...new Set([...existingDishes, ...dishesScanned])],
-          saucesPitched: [...new Set([...existingSauces, ...saucesPitched])],
+          dishesScanned: Array.from(new Set([...existingDishes, ...dishesScanned])),
+          saucesPitched: Array.from(new Set([...existingSauces, ...saucesPitched])),
           scanCount: ((existingMeta?.scanCount as number) || 1) + 1,
           lastScan: new Date().toISOString(),
         },
