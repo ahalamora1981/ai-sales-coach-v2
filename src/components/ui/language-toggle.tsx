@@ -3,9 +3,9 @@
 import { useState, useRef, useEffect } from "react"
 import { useLanguage, Locale } from "@/lib/i18n/context"
 
-const languages: { code: Locale; label: string; flag: string }[] = [
-  { code: "en", label: "English", flag: "🇺🇸" },
-  { code: "zh", label: "中文", flag: "🇨🇳" },
+const languages: { code: Locale; label: string }[] = [
+  { code: "en", label: "English" },
+  { code: "zh", label: "中文" },
 ]
 
 export function LanguageToggle() {
@@ -48,7 +48,7 @@ export function LanguageToggle() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-40 bg-white border border-hairline rounded-lg shadow-lg overflow-hidden z-50">
+        <div className="absolute mt-2 w-40 bg-white border border-hairline rounded-lg shadow-lg overflow-hidden z-50 right-0 md:right-0 left-auto md:left-auto">
           {languages.map((lang) => (
             <button
               key={lang.code}
