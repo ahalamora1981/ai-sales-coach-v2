@@ -200,6 +200,11 @@ export default function DashboardPage() {
                     
                     <div className="mt-2 text-sm">
                       <p className="text-muted">
+                        <span className="font-medium">{locale === "zh" ? "相关菜系" : "Related Cuisines"}:</span> {sauce.relatedCuisines.join("、")}
+                      </p>
+                    </div>
+                    <div className="mt-1 text-sm">
+                      <p className="text-muted">
                         <span className="font-medium">{locale === "zh" ? "保质期" : "Shelf Life"}:</span> {sauce.shelfLife}
                       </p>
                     </div>

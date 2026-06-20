@@ -11,6 +11,7 @@ export interface SauceKnowledge {
   storageTips: string
   shelfLife: string
   bestPairings: string[]
+  relatedCuisines: string[]
   proTips: string[]
 }
 
@@ -44,6 +45,7 @@ export const sauceKnowledgeBase: SauceKnowledge[] = [
     storageTips: "开封后冷藏保存，使用干净餐具取用",
     shelfLife: "开封后冷藏可保存3个月",
     bestPairings: ["宫保鸡丁", "麻婆豆腐", "炒饭", "炒面"],
+    relatedCuisines: ["川菜", "粤菜", "东南亚菜"],
     proTips: [
       "炒菜时先爆香蒜蓉辣酱，再加入主料",
       "可与蜂蜜混合做成甜辣烤肉酱",
@@ -66,6 +68,7 @@ export const sauceKnowledgeBase: SauceKnowledge[] = [
     storageTips: "常温保存即可，开封后风味更佳",
     shelfLife: "未开封可保存2年，开封后6个月",
     bestPairings: ["春卷", "越南河粉", "汉堡", "炸鸡"],
+    relatedCuisines: ["东南亚菜", "美式"],
     proTips: [
       "薯条蘸酱首选",
       "拌入意面酱增添辣味",
@@ -88,6 +91,7 @@ export const sauceKnowledgeBase: SauceKnowledge[] = [
     storageTips: "必须冷藏保存，取用时使用干燥餐具",
     shelfLife: "开封后冷藏可保存2个月",
     bestPairings: ["沙爹", "炒粿条", "椰浆饭", "叻沙"],
+    relatedCuisines: ["印尼菜", "马来菜", "新加坡菜"],
     proTips: [
       "炒饭时加入一勺，风味地道",
       "腌制鸡肉后烤制，味道绝佳",
@@ -110,6 +114,7 @@ export const sauceKnowledgeBase: SauceKnowledge[] = [
     storageTips: "常温避光保存，开封后风味更佳",
     shelfLife: "未开封可保存3年，开封后1年",
     bestPairings: ["蒸鱼", "炒青菜", "饺子", "白切鸡"],
+    relatedCuisines: ["粤菜", "鲁菜", "本帮菜"],
     proTips: [
       "蒸鱼豉油=生抽+少许糖+姜丝",
       "凉拌菜最后淋入，保持色泽",
@@ -132,6 +137,7 @@ export const sauceKnowledgeBase: SauceKnowledge[] = [
     storageTips: "常温避光保存",
     shelfLife: "未开封可保存2年",
     bestPairings: ["红烧肉", "炒面", "卤味", "焖饭"],
+    relatedCuisines: ["鲁菜", "本帮菜"],
     proTips: [
       "红烧菜必备，色泽诱人",
       "与生抽1:1混合，色香味俱全",
@@ -154,6 +160,7 @@ export const sauceKnowledgeBase: SauceKnowledge[] = [
     storageTips: "开封后必须冷藏保存",
     shelfLife: "开封后冷藏可保存6个月",
     bestPairings: ["蚝油生菜", "炒牛肉", "叉烧", "西兰花"],
+    relatedCuisines: ["粤菜"],
     proTips: [
       "蚝油生菜=蚝油+蒜蓉+少许糖",
       "腌制牛肉时加入，肉质嫩滑",
@@ -172,6 +179,7 @@ export const sauceKnowledgeBase: SauceKnowledge[] = [
     storageTips: "开封后冷藏保存",
     shelfLife: "开封后冷藏可保存4个月",
     bestPairings: ["素炒", "豆腐", "炒饭", "蒸蔬菜"],
+    relatedCuisines: ["素食", "粤菜"],
     proTips: [
       "对海鲜过敏者的完美替代",
       "素食红烧菜上色效果好",
@@ -194,6 +202,7 @@ export const sauceKnowledgeBase: SauceKnowledge[] = [
     storageTips: "开封后冷藏保存",
     shelfLife: "开封后冷藏可保存6个月",
     bestPairings: ["北京烤鸭", "春卷", "锅贴", "叉烧"],
+    relatedCuisines: ["京菜", "粤菜"],
     proTips: [
       "烤鸭薄饼+海鲜酱+葱丝+黄瓜=经典吃法",
       "可作为烤肉腌料基础",
@@ -216,6 +225,7 @@ export const sauceKnowledgeBase: SauceKnowledge[] = [
     storageTips: "开封后冷藏保存",
     shelfLife: "开封后冷藏可保存3个月",
     bestPairings: ["叉烧", "烤肉", "烧鸭", "烤排骨"],
+    relatedCuisines: ["粤菜", "烧烤"],
     proTips: [
       "叉烧腌制过夜更入味",
       "最后5分钟刷酱，避免烤焦",
@@ -238,6 +248,7 @@ export const sauceKnowledgeBase: SauceKnowledge[] = [
     storageTips: "开封后冷藏保存，表面可淋少许油防干",
     shelfLife: "开封后冷藏可保存1年",
     bestPairings: ["麻婆豆腐", "回锅肉", "水煮鱼", "宫保鸡丁"],
+    relatedCuisines: ["川菜"],
     proTips: [
       "小火慢炒出红油，香味更浓",
       "新手从半勺开始，逐步加量",
@@ -260,6 +271,7 @@ export const sauceKnowledgeBase: SauceKnowledge[] = [
     storageTips: "密封保存，可冷冻延长保质期",
     shelfLife: "密封可保存2年",
     bestPairings: ["豆豉鲮鱼", "排骨", "炒青菜", "蒸鱼"],
+    relatedCuisines: ["粤菜"],
     proTips: [
       "豆豉蒸排骨=经典粤菜",
       "与蒜蓉1:1混合，炒菜万能酱",
@@ -282,6 +294,7 @@ export const sauceKnowledgeBase: SauceKnowledge[] = [
     storageTips: "常温保存即可",
     shelfLife: "未开封可保存18个月",
     bestPairings: ["炸虾", "春卷", "鸡块", "虾饼"],
+    relatedCuisines: ["东南亚菜", "美式"],
     proTips: [
       "炸春卷蘸酱首选",
       "烤鸡翅最后5分钟刷酱",
