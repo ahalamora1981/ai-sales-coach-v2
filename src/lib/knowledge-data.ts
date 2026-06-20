@@ -351,6 +351,114 @@ export const cuisineKnowledgeBase: CuisineKnowledge[] = [
     signatureDishes: ["松鼠桂鱼", "狮子头", "盐水鸭", "叫花鸡"],
     sauceRecommendations: ["生抽", "蚝油", "甜辣酱"],
     cookingTechniques: ["炖", "焖", "蒸", "烧", "煨"]
+  },
+  {
+    id: "southeast-asian",
+    name: "Southeast Asian Cuisine",
+    nameZh: "东南亚菜",
+    region: "泰国、越南、新加坡、马来西亚",
+    characteristics: "酸辣鲜香，香料丰富，口味层次分明。",
+    flavorProfile: "酸、辣、甜、咸、鲜",
+    keyIngredients: ["鱼露", "青柠", "椰奶", "香茅", "辣椒"],
+    signatureDishes: ["冬阴功", "越南河粉", "椰浆饭", "沙爹", "叻沙"],
+    sauceRecommendations: ["是拉差", "叁巴酱", "甜辣酱"],
+    cookingTechniques: ["煮", "炒", "烤", "蒸", "凉拌"]
+  },
+  {
+    id: "american",
+    name: "American Cuisine",
+    nameZh: "美式",
+    region: "美国",
+    characteristics: "分量大，口味浓郁，快餐文化盛行。",
+    flavorProfile: "咸、甜、烟熏、芝士",
+    keyIngredients: ["芝士", "培根", "黄油", "番茄酱", "芥末"],
+    signatureDishes: ["汉堡", "热狗", "炸鸡", "烤肋排", "薯条"],
+    sauceRecommendations: ["是拉差", "甜辣酱", "番茄酱"],
+    cookingTechniques: ["烤", "炸", "煎", "炖", "烟熏"]
+  },
+  {
+    id: "indonesian",
+    name: "Indonesian Cuisine",
+    nameZh: "印尼菜",
+    region: "印度尼西亚",
+    characteristics: "香料丰富，甜咸交织，椰香浓郁。",
+    flavorProfile: "甜、咸、辣、椰香",
+    keyIngredients: ["椰奶", "虾酱", "花生", "香茅", "高良姜"],
+    signatureDishes: ["沙爹", "炒饭", "加多加多", "仁当"],
+    sauceRecommendations: ["叁巴酱", "甜辣酱"],
+    cookingTechniques: ["炒", "烤", "煮", "炸", "蒸"]
+  },
+  {
+    id: "malaysian",
+    name: "Malaysian Cuisine",
+    nameZh: "马来菜",
+    region: "马来西亚",
+    characteristics: "多元文化融合，香料重，口味浓烈。",
+    flavorProfile: "辣、甜、咸、椰香",
+    keyIngredients: ["椰奶", "虾酱", "辣椒", "香茅", "黄姜"],
+    signatureDishes: ["椰浆饭", "炒粿条", "肉骨茶", "咖喱面"],
+    sauceRecommendations: ["叁巴酱", "甜辣酱"],
+    cookingTechniques: ["炒", "煮", "烤", "炸", "蒸"]
+  },
+  {
+    id: "singaporean",
+    name: "Singaporean Cuisine",
+    nameZh: "新加坡菜",
+    region: "新加坡",
+    characteristics: "中西合璧，多元融合，口味独特。",
+    flavorProfile: "辣、甜、咸、鲜",
+    keyIngredients: ["辣椒", "椰奶", "虾酱", "青柠", "香茅"],
+    signatureDishes: ["海南鸡饭", "辣椒蟹", "咖椰吐司", "肉骨茶"],
+    sauceRecommendations: ["叁巴酱", "甜辣酱", "辣椒蟹酱"],
+    cookingTechniques: ["炒", "煮", "烤", "蒸", "炸"]
+  },
+  {
+    id: "benbang",
+    name: "Shanghai Cuisine",
+    nameZh: "本帮菜",
+    region: "上海、江苏南部",
+    characteristics: "浓油赤酱，甜咸适中，精致细腻。",
+    flavorProfile: "甜、咸、鲜、浓油赤酱",
+    keyIngredients: ["糖", "酱油", "醋", "料酒", "姜"],
+    signatureDishes: ["红烧肉", "糖醋排骨", "小笼包", "生煎包"],
+    sauceRecommendations: ["生抽", "草菇酱油", "蚝油"],
+    cookingTechniques: ["红烧", "爆炒", "蒸", "煮", "焖"]
+  },
+  {
+    id: "beijing",
+    name: "Beijing Cuisine",
+    nameZh: "京菜",
+    region: "北京",
+    characteristics: "宫廷风味，选料讲究，口味浓厚。",
+    flavorProfile: "咸、甜、酱香、葱香",
+    keyIngredients: ["大葱", "甜面酱", "酱油", "醋", "蒜"],
+    signatureDishes: ["北京烤鸭", "炸酱面", "涮羊肉", "豆汁"],
+    sauceRecommendations: ["海鲜酱", "甜面酱", "生抽"],
+    cookingTechniques: ["烤", "炸", "涮", "炒", "蒸"]
+  },
+  {
+    id: "vegetarian",
+    name: "Vegetarian Cuisine",
+    nameZh: "素食",
+    region: "全球",
+    characteristics: "健康清淡，注重食材本味，环保理念。",
+    flavorProfile: "清淡、鲜甜、本味",
+    keyIngredients: ["豆腐", "蔬菜", "菌菇", "豆制品", "坚果"],
+    signatureDishes: ["素炒", "豆腐煲", "蔬菜沙拉", "菌菇汤"],
+    sauceRecommendations: ["素蚝油", "生抽", "甜辣酱"],
+    cookingTechniques: ["蒸", "煮", "炒", "凉拌", "烤"]
+  },
+  {
+    id: "bbq",
+    name: "BBQ Cuisine",
+    nameZh: "烧烤",
+    region: "全球",
+    characteristics: "烟熏风味，肉质鲜嫩，酱料浓郁。",
+    flavorProfile: "烟熏、甜、咸、辣",
+    keyIngredients: ["烧烤酱", "蜂蜜", "蒜", "辣椒", "孜然"],
+    signatureDishes: ["烤肉", "烤排骨", "烤鸡翅", "烤蔬菜"],
+    sauceRecommendations: ["烧烤酱", "海鲜酱", "甜辣酱"],
+    cookingTechniques: ["烤", "烟熏", "串烤", "铁板"]
   }
 ]
 
