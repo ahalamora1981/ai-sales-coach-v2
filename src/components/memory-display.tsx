@@ -128,8 +128,8 @@ export function MemoryDisplay() {
       {/* Knowledge - Sauces Learned */}
       {knownSauces.length > 0 && (
         <Collapsible
-          title={locale === "zh" ? `已学酱料 (${knownSauces.length})` : `Learned Sauces (${knownSauces.length})`}
-          defaultOpen={true}
+          title={locale === "zh" ? `已学习酱料 (${knownSauces.length})` : `Learned Sauces (${knownSauces.length})`}
+          defaultOpen={false}
         >
           <div className="flex flex-wrap gap-2">
             {knownSauces.map((sauce) => (
