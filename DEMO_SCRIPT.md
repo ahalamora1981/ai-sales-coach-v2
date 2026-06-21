@@ -46,7 +46,7 @@
 
 2. **Show sample menus**
    - 5 menu images + 5 text menus
-   - Click 川菜火锅 (Sichuan Hotpot)
+   - Click a text menu (e.g., 川菜火锅)
 
 3. **Click 开始扫描**
    - Show loading state
@@ -67,7 +67,7 @@
 
 ---
 
-### Part 3: AI Coach Chat (5 minutes)
+### Part 3: AI 专属陪练 (5 minutes)
 
 1. **Navigate to 专属陪练 (AI Coach)**
 
@@ -76,37 +76,52 @@
    - DeepSeek (text-only)
 
 3. **Start conversation**
-   - "How do I sell Chili Garlic Sauce to a Sichuan restaurant?"
+   - "怎么向西餐厅推销KHC烧烤酱？"
    - Show streaming response
 
 4. **Show personalization**
    - AI references user's experience level
    - Adapts tone and depth
 
-5. **Switch models**
+5. **Demonstrate 👍 knowledge point extraction**
+   - Click thumbs up inside AI response
+   - Explain: "This saves a key knowledge point for later review"
+
+6. **Switch models**
    - Change to DeepSeek
    - Ask follow-up question
    - Show seamless model switching
 
-6. **Show "Ask Coach" from scanner**
-   - Go back to scanner results
-   - Click "问我教练" on a dish
-   - Shows contextual coaching
-
-**Talking point:** "The AI remembers past conversations and adapts. Over time, it learns each rep's strengths and weaknesses."
+**Talking point:** "The AI remembers past conversations and adapts. When you like a response, it extracts the key knowledge point for easy review."
 
 ---
 
-### Part 4: Knowledge Base (2 minutes)
+### Part 4: Learning Profile (3 minutes)
 
-1. **Go to Dashboard**
+1. **Go to Dashboard (主页)**
 
-2. **Show 菜品酱料知识库**
+2. **Show 学习档案 section**
+   - **酱料大全** — Expand to show all 12 KHC sauces
+   - **已扫描菜单** — Show scan history with dishes
+   - **已学习知识点** — Show extracted knowledge points
+
+3. **Explain the workflow**
+   - Scan menu → saved to 已扫描菜单
+   - Chat with AI → sauces learned
+   - Click 👍 → key insight saved to 已学习知识点
+
+**Talking point:** "Everything the rep learns is captured and organized. They can review their knowledge anytime."
+
+---
+
+### Part 5: Knowledge Base (2 minutes)
+
+1. **Show 菜品酱料知识库**
    - Expand 辣酱 category
    - Show 12 KHC sauces with details
-   - Show 13 cuisine types
+   - Show 13+ cuisine types
 
-3. **Highlight**
+2. **Highlight**
    - Complete product knowledge at fingertips
    - Pairing guidelines for each sauce
    - Storage and shelf life info
@@ -115,7 +130,7 @@
 
 ---
 
-### Part 5: Conversation History (1 minute)
+### Part 6: Conversation History (1 minute)
 
 1. **Navigate to 历史记录 (History)**
 
@@ -133,14 +148,15 @@
 ### Key Benefits Recap
 1. **Efficiency** — Menu scan in 10 seconds vs 30 minutes
 2. **Consistency** — AI ensures accurate sauce recommendations
-3. **Personalization** — Adapts to each rep's level and preferences
-4. **Knowledge** — Complete product info always available
-5. **Improvement** — AI learns and gets better over time
+3. **Personalization** — Adapts to each rep's level
+4. **Knowledge Capture** — Thumbs up saves key insights
+5. **Learning Profile** — Organized review of scans, knowledge points
 
 ### Technical Highlights
 - Multi-LLM support (Qwen + DeepSeek)
 - Vision AI for menu scanning
 - Adaptive memory system
+- Knowledge point extraction
 - Bilingual (Chinese/English)
 - Mobile-first design
 
@@ -159,8 +175,8 @@ A: "The AI combines Vision recognition with our sauce knowledge base. For the de
 **Q: Can it work offline?**
 A: "The demo requires internet for AI APIs. For production, we could implement offline caching for sauce knowledge."
 
-**Q: How does it handle regional preferences?**
-A: "The adaptive memory learns regional preferences over time. We can also pre-configure regional recommendations."
+**Q: How does the knowledge point feature work?**
+A: "When a rep likes an AI response, the system extracts the key insight — like a sales tip or product benefit — and saves it for quick review later."
 
 **Q: What about data security?**
 A: "For production, we'd implement enterprise authentication and data encryption. The demo uses local data only."
@@ -179,6 +195,8 @@ A: "With stakeholder approval, we could have a production-ready version in 4-6 w
 - [ ] Internet connection stable
 - [ ] Browser open to localhost:3000
 - [ ] Clear browser cache
+- [ ] Test menu scan works
+- [ ] Test chat with thumbs up works
 
 ### During Demo
 - [ ] Speak Chinese (audience preference)
@@ -186,6 +204,7 @@ A: "With stakeholder approval, we could have a production-ready version in 4-6 w
 - [ ] Pause for reactions
 - [ ] Don't rush through features
 - [ ] Highlight "wow" moments
+- [ ] Click 👍 to show knowledge point extraction
 
 ### After Demo
 - [ ] Collect feedback
@@ -204,4 +223,4 @@ If live demo fails:
 
 ---
 
-*Script version 1.0 — 2026-06-20*
+*Script version 2.0 — 2026-06-21*

@@ -3,8 +3,8 @@
 
 | Field | Value |
 |-------|-------|
-| **Document Version** | 2.0 |
-| **Date** | 2026-06-20 |
+| **Document Version** | 3.0 |
+| **Date** | 2026-06-21 |
 | **Status** | Implementation Complete |
 | **Repository** | https://github.com/ahalamora1981/ai-sales-coach-v2 |
 
@@ -44,6 +44,7 @@ A proof-of-concept web application for Kraft Heinz China stakeholders — an AI-
 | **Adaptive Learning** | AI remembers user preferences, mistakes, and experience level |
 | **Multi-LLM Support** | User can switch between Qwen and DeepSeek |
 | **Bilingual** | Full Chinese/English UI with language toggle |
+| **Knowledge Points** | Thumbs up saves extracted knowledge points for review |
 
 ---
 
@@ -66,14 +67,16 @@ A proof-of-concept web application for Kraft Heinz China stakeholders — an AI-
 | Feature | Status |
 |---------|--------|
 | User Authentication | Done — 3 demo accounts with auto-login |
-| Menu Scanner | Done — Image upload + Qwen Vision AI |
+| Menu Scanner (Image) | Done — Image upload + Qwen Vision AI |
+| Menu Scanner (Text) | Done — Text menu analysis via Qwen |
 | AI Sales Coach | Done — Streaming chat with model switching |
-| Adaptive Memory | Done — Tracks preferences, mistakes, experience |
+| Adaptive Memory | Done — Tracks sauces, restaurants, knowledge points |
 | Conversation History | Done — Persistent chat/scan history |
 | Bilingual UI | Done — Chinese/English toggle |
 | Knowledge Base | Done — 12 sauces + 13 cuisines |
 | Responsive Design | Done — Mobile bottom tabs + desktop navbar |
 | Docker Deployment | Done — Production + dev with hot reload |
+| Learning Profile | Done — 酱料大全, 已扫描菜单, 已学习知识点 |
 
 ### 3.2 Out of Scope
 
@@ -103,44 +106,58 @@ A proof-of-concept web application for Kraft Heinz China stakeholders — an AI-
 - Qwen Vision AI extracts dishes
 - System recommends KHC sauces with rationale
 - Results saved to conversation history
+- Restaurant memory stored for tracking
 
 **Supported input:**
-- Image upload (JPG, PNG)
+- Image upload (JPG, PNG) → `/api/scanner`
 - Built-in sample menus (5 images + 5 text menus)
+- Text menu → `/api/scanner/text`
 
 **Models:**
 - Qwen only (DeepSeek lacks vision capability)
 
-### 4.2 AI Sales Coach
+### 4.2 AI Sales Coach (专属陪练)
 
 **What it does:**
 - Natural language chat with AI coach
 - Streaming responses
 - Model switching (Qwen/DeepSeek)
 - Personalized based on user profile and history
+- Thumbs up saves knowledge points
 
-**Personalization dimensions:**
-
-| Dimension | How It's Learned | How It's Used |
-|-----------|------------------|---------------|
-| Experience Level | Initial question complexity | Adjust explanation depth |
-| Cuisine Focus | Menu scans, questions | Prioritize relevant sauces |
-| Regional Focus | Restaurant locations | Local market insights |
-| Mistakes | Corrections received | Avoid repeating errors |
-| Preferences | Thumbs up/down feedback | Reinforce preferred content |
+**Chat UI:**
+- AI 陪练 label on responses
+- Thumbs up button inside each AI response
+- Model selector in header
+- Suggested prompts for quick start
 
 ### 4.3 Adaptive Memory System
 
 **Memory types tracked:**
 
-| Type | Example |
-|------|---------|
-| Preference | "Prefers spicy sauces" |
-| Mistake | "Wrongly recommended oyster sauce for vegetarian" |
-| Experience | "Uses advanced terminology" |
-| Pattern | "Frequently asks about Sichuan cuisine" |
+| Memory Type | What It Stores | How It's Used |
+|-------------|----------------|---------------|
+| `knowledge` | Sauces discussed in chat | 酱料大全 section |
+| `restaurant` | Scanned menus with dishes | 已扫描菜单 section |
+| `knowledge_point` | Extracted insights from thumbs up | 已学习知识点 section |
 
-### 4.4 Knowledge Base
+**Knowledge Point Extraction:**
+- Analyzes AI response when user clicks thumbs up
+- Extracts key sales tips, phrases, or product insights
+- Stores as concise knowledge point (max 100 chars)
+- Avoids exact duplicates
+
+### 4.4 Dashboard Learning Profile
+
+**Sections:**
+
+| Section | Content | Source |
+|---------|---------|--------|
+| 酱料大全 (12) | All KHC sauces with details | Static knowledge base |
+| 已扫描菜单 | Restaurants scanned with dishes | Menu scanner |
+| 已学习知识点 | Extracted knowledge from thumbs up | Chat feedback |
+
+### 4.5 Knowledge Base
 
 **Sauces (12 products):**
 
@@ -152,15 +169,15 @@ A proof-of-concept web application for Kraft Heinz China stakeholders — an AI-
 | Chinese Sauces (中式酱) | Hoisin, Chinese BBQ |
 | Specialty (特色酱) | Doubanjiang, Fermented Black Bean, Sweet Chili |
 
-**Cuisines (13 types):**
-Sichuan, Cantonese, Hunan, Shandong, Jiangsu, Zhejiang, Fujian, Anhui, Henan, Northeast, Hubei, Xinjiang, Yunnan
+**Cuisines (16 types):**
+Sichuan, Cantonese, Hunan, Shandong, Jiangsu, Zhejiang, Fujian, Anhui, Henan, Northeast, Hubei, Xinjiang, Yunnan, Western, Japanese, Korean
 
-### 4.5 Bilingual Support
+### 4.6 Bilingual Support
 
 - Full Chinese/English UI
 - Language toggle in navbar (desktop) and profile drawer (mobile)
 - AI responses match selected language
-- Persisted in localStorage
+- Chinese names for cuisines in UI (川菜, 粤菜, etc.)
 
 ---
 
@@ -192,12 +209,14 @@ ai-sales-coach-v2/
 │   ├── app/
 │   │   ├── api/
 │   │   │   ├── auth/          # NextAuth endpoints
-│   │   │   ├── chat/          # Streaming chat
+│   │   │   ├── chat/          # Streaming chat + feedback
 │   │   │   ├── conversations/ # History API
-│   │   │   ├── dashboard/     # Stats + knowledge API
-│   │   │   └── scanner/       # Menu processing
+│   │   │   ├── memories/      # Learning profile API
+│   │   │   ├── scanner/       # Menu image analysis
+│   │   │   │   └── text/      # Menu text analysis
+│   │   │   └── dashboard/     # Stats + knowledge API
 │   │   ├── dashboard/
-│   │   │   ├── page.tsx       # Dashboard home
+│   │   │   ├── page.tsx       # Dashboard + Learning Profile
 │   │   │   ├── scanner/       # Menu scanner
 │   │   │   ├── chat/          # AI coach chat
 │   │   │   └── history/       # Conversation history
@@ -206,10 +225,16 @@ ai-sales-coach-v2/
 │   │
 │   ├── components/
 │   │   ├── layout/            # Navbar with mobile tabs
+│   │   ├── memory-display.tsx # Learning Profile component
+│   │   ├── page-transition.tsx# Page animations
 │   │   └── ui/                # Button, Collapsible, etc.
 │   │
 │   └── lib/
-│       ├── ai/                # LLM providers, memory, prompts
+│       ├── ai/
+│       │   ├── providers/     # Qwen, DeepSeek adapters
+│       │   ├── memory.ts      # Memory system (6 functions)
+│       │   ├── prompts.ts     # System prompts
+│       │   └── sauce-kb.ts    # Sauce knowledge queries
 │       ├── i18n/              # Translations, context
 │       ├── knowledge-data.ts  # Sauce + cuisine knowledge
 │       ├── auth.ts            # NextAuth config
@@ -219,7 +244,7 @@ ai-sales-coach-v2/
 │   └── sample-menus/          # 5 images + 5 text menus
 │
 ├── Dockerfile                 # Multi-stage production build
-├── docker-compose.yml         # Production
+├── docker-compose.yml         # Production (uses *_PRD env vars)
 ├── docker-compose.dev.yml     # Development with hot reload
 └── docker-entrypoint.sh       # Auto-seed on first run
 ```
@@ -230,8 +255,10 @@ ai-sales-coach-v2/
 |----------|--------|---------|
 | `/api/auth/[...nextauth]` | GET/POST | Authentication |
 | `/api/chat` | POST | Streaming chat with AI |
-| `/api/chat/feedback` | POST | Thumbs up/down feedback |
+| `/api/chat/feedback` | POST | Thumbs up → save knowledge point |
 | `/api/scanner` | POST | Menu image analysis |
+| `/api/scanner/text` | POST | Menu text analysis (returns JSON) |
+| `/api/memories` | GET | Learning profile data |
 | `/api/conversations` | GET | List conversations |
 | `/api/conversations/[id]` | GET | Get conversation detail |
 | `/api/dashboard/stats` | GET | Usage statistics |
@@ -308,14 +335,16 @@ messages
 ├── role (String: user|assistant|system)
 ├── content (String)
 ├── model (String?)
-└── createdAt (DateTime)
+├── feedback (String?: thumbs_up|thumbs_down)
+├── createdAt (DateTime)
 
 menu_items
 ├── id (String, PK)
 ├── conversationId (String, FK)
 ├── originalName (String)
 ├── extractedName (String?)
-└── recommendations (Json?)
+├── englishName (String?)
+├── recommendations (Json?)
 
 sauce_kb
 ├── id (String, PK)
@@ -328,7 +357,7 @@ sauce_kb
 user_memories
 ├── id (String, PK)
 ├── userId (String, FK)
-├── memoryType (String)
+├── memoryType (String: knowledge|restaurant|knowledge_point)
 ├── content (String)
 ├── metadata (Json?)
 ├── createdAt (DateTime)
@@ -341,32 +370,28 @@ user_memories
 
 ### 8.1 LLM Providers
 
-| Provider | Models | Vision | Streaming |
-|----------|--------|--------|-----------|
-| Qwen (DashScope) | qwen-plus, qwen-vl-max | Yes | Yes |
+| Provider | Model | Vision | Streaming |
+|----------|-------|--------|-----------|
+| Qwen (DashScope) | qwen3.7-plus | Yes | Yes |
 | DeepSeek | deepseek-chat | No | Yes |
 
-### 8.2 Memory Engine
+### 8.2 Memory System
 
-**How it works:**
+**Memory Functions:**
 
-1. **Before AI response:** Load user profile + recent memories
-2. **Build personalized prompt:** Include experience level, preferences, past mistakes
-3. **After AI response:** Extract new insights and store memories
+| Function | Purpose |
+|----------|---------|
+| `storeProductKnowledge()` | Track sauces discussed in chat |
+| `storeRestaurantMemory()` | Track scanned menus |
+| `storeKnowledgePoint()` | Extract knowledge from thumbs up |
+| `getKnowledgeContext()` | Build prompt with known sauces |
+| `getRestaurantContext()` | Build prompt with scan history |
+| `getScenarioContext()` | Build prompt with practice history |
 
-**Memory types:**
-
-| Type | Extraction Method |
-|------|-------------------|
-| Preference | Keyword detection, explicit feedback |
-| Mistake | Correction detection |
-| Experience | Question complexity analysis |
-| Pattern | Frequency analysis |
-
-### 8.3 System Prompts
-
-- **Menu Scanner:** Analyzes dishes, recommends sauces with rationale
-- **Sales Coach:** Adapts to experience level, references past conversations
+**Knowledge Point Extraction:**
+1. Look for sales tips (话术, 建议, 可以强调)
+2. Fallback to sentences about sauces/products
+3. Clean up and limit to 100 chars
 
 ---
 
@@ -378,23 +403,33 @@ user_memories
 2. Click demo account → auto-login with password "demo123"
 3. Redirect to dashboard
 
-### 9.2 Menu Scanner
+### 9.2 Dashboard
+
+1. Welcome message with user name
+2. Feature cards (菜单精灵, AI 专属陪练)
+3. **Learning Profile:**
+   - 酱料大全 — All 12 KHC sauces
+   - 已扫描菜单 — Scan history
+   - 已学习知识点 — Knowledge from thumbs up
+4. 菜品酱料知识库 — Detailed sauce + cuisine knowledge
+
+### 9.3 Menu Scanner
 
 1. Click "菜单精灵" tab
 2. Upload image or select sample menu
 3. Click "开始扫描"
 4. View extracted dishes + sauce recommendations
-5. Results saved to history
+5. Click "问问陪练" to discuss with AI
 
-### 9.3 AI Coach Chat
+### 9.4 AI Coach Chat (专属陪练)
 
 1. Click "专属陪练" tab
 2. Select model (Qwen/DeepSeek)
 3. Type message or use suggested prompts
 4. View streaming response
-5. Provide feedback (thumbs up/down)
+5. **Click 👍 inside AI response** → saves knowledge point
 
-### 9.4 History
+### 9.5 History
 
 1. Click "历史记录" tab
 2. View list of past conversations
@@ -424,6 +459,12 @@ Located in `public/sample-menus/`:
 
 ### 11.1 Docker Setup
 
+**Development (hot reload):**
+```bash
+docker compose -f docker-compose.dev.yml up -d
+# Edit files → auto-reload
+```
+
 **Production:**
 ```bash
 docker compose up -d
@@ -431,24 +472,22 @@ docker compose up -d
 # DB: localhost:5434
 ```
 
-**Development (hot reload):**
-```bash
-docker compose -f docker-compose.dev.yml up -d
-# Edit files → auto-reload
-```
-
 ### 11.2 Environment Variables
 
 ```env
-# Auth
-AUTH_SECRET=your-secret
-AUTH_TRUST_HOST=true
+# Development
+DATABASE_URL_DEV="postgresql://postgres:password@db:5432/ai_sales_coach"
+NEXTAUTH_URL_DEV=http://localhost:3000
+AUTH_URL_DEV=http://localhost:3000/api/auth
 
-# Database
-DATABASE_URL=postgresql://postgres:password@127.0.0.1:5434/ai_sales_coach
+# Production
+DATABASE_URL_PRD="postgresql://postgres:password@db:5432/ai_sales_coach"
+NEXTAUTH_URL_PRD=https://johnnytao.com.cn
+AUTH_URL_PRD=https://johnnytao.com.cn/api/auth
 
 # AI APIs
 QWEN_API_KEY=sk-xxx
+QWEN_MODEL=qwen3.7-plus
 DEEPSEEK_API_KEY=sk-xxx
 ```
 
@@ -467,9 +506,9 @@ DEEPSEEK_API_KEY=sk-xxx
 | Route | Description |
 |-------|-------------|
 | `/login` | Login with demo accounts |
-| `/dashboard` | Welcome + feature cards + knowledge base |
+| `/dashboard` | Welcome + Learning Profile + Knowledge Base |
 | `/dashboard/scanner` | Menu scanner with sample menus |
-| `/dashboard/chat` | AI coach with model selector |
+| `/dashboard/chat` | AI 陪练 with model selector + thumbs up |
 | `/dashboard/history` | Conversation history list |
 
 ### B. Key Components
@@ -477,9 +516,10 @@ DEEPSEEK_API_KEY=sk-xxx
 | Component | File |
 |-----------|------|
 | Navbar | `src/components/layout/navbar.tsx` |
+| Memory Display | `src/components/memory-display.tsx` |
 | Language Toggle | `src/components/ui/language-toggle.tsx` |
 | Collapsible | `src/components/ui/collapsible.tsx` |
-| Button | `src/components/ui/button.tsx` |
+| Page Transition | `src/components/page-transition.tsx` |
 
 ### C. Git Branches
 
@@ -489,4 +529,4 @@ DEEPSEEK_API_KEY=sk-xxx
 
 ---
 
-*Document reflects implementation as of 2026-06-20.*
+*Document reflects implementation as of 2026-06-21.*
